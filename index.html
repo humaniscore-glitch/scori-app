@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scori by Humaniscore</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  :root { --navy:#0F1B2D; --blue:#1A56DB; --teal:#0EA5A0; --purple:#7C3AED; --green:#10B981; --orange:#F59E0B; --red:#EF4444; --grey-1:#F8FAFC; --grey-2:#EFF2F7; --grey-3:#CBD5E1; --grey-4:#64748B; --text:#1E293B; --white:#FFFFFF; --sidebar:240px; --radius:16px; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--grey-1); color:var(--text); display:flex; min-height:100vh; overflow-x:hidden; }
+  .sidebar { width:var(--sidebar); background:var(--navy); display:flex; flex-direction:column; position:fixed; top:0; left:0; bottom:0; z-index:100; }
+  .sidebar-logo { padding:28px 20px 20px; border-bottom:1px solid rgba(255,255,255,0.08); }
+  .scori-brand { display:flex; align-items:center; gap:10px; }
+  .scori-mascot { width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,var(--blue),var(--teal)); display:flex; align-items:center; justify-content:center; font-size:22px; animation:float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-4px)} }
+  .scori-name { font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; color:white; }
+  .scori-sub { font-size:10px; color:rgba(255,255,255,0.45); letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
+  .nav-section { padding:16px 12px 8px; font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.3); font-weight:600; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 16px; margin:2px 8px; border-radius:10px; color:rgba(255,255,255,0.6); font-size:13.5px; font-weight:500; cursor:pointer; transition:all 0.2s; text-decoration:none; }
+  .nav-item:hover { background:rgba(255,255,255,0.07); color:white; }
+  .nav-item.active { background:linear-gradient(135deg,rgba(26,86,219,0.3),rgba(14,165,160,0.2)); color:white; border:1px solid rgba(26,86,219,0.3); }
+  .nav-icon { font-size:16px; width:20px; text-align:center; }
+  .sidebar-footer { margin-top:auto; padding:16px; border-top:1px solid rgba(255,255,255,0.08); }
+  .user-badge { display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(255,255,255,0.06); border-radius:10px; }
+  .avatar { width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--blue),var(--purple)); display:flex; align-items:center; justify-content:center; color:white; font-size:12px; font-weight:700; }
+  .user-info { flex:1; }
+  .user-name { font-size:12px; font-weight:600; color:white; }
+  .user-role { font-size:10px; color:rgba(255,255,255,0.4); }
+  .main { margin-left:var(--sidebar); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+  .topbar { background:white; padding:0 32px; height:64px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--grey-2); position:sticky; top:0; z-index:50; }
+  .page-title { font-family:'Space Grotesk',sans-serif; font-size:18px; font-weight:700; }
+  .topbar-actions { display:flex; align-items:center; gap:12px; }
+  .btn { padding:8px 18px; border-radius:10px; font-size:13px; font-weight:600; cursor:pointer; transition:all 0.2s; border:none; display:flex; align-items:center; gap:6px; }
+  .btn-primary { background:linear-gradient(135deg,var(--blue),var(--teal)); color:white; box-shadow:0 4px 12px rgba(26,86,219,0.25); }
+  .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(26,86,219,0.35); }
+  .btn-ghost { background:var(--grey-2); color:var(--text); border:1px solid var(--grey-3); }
+  .content { padding:28px 32px; flex:1; }
+  .screen { display:none; animation:fadeIn 0.3s ease; }
+  .screen.active { display:block; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+  .hero-grid { display:grid; grid-template-columns:1fr 1fr 1fr 1.4fr; gap:20px; margin-bottom:24px; }
+  .score-card { background:white; border-radius:var(--radius); padding:24px; border:1px solid var(--grey-2); position:relative; overflow:hidden; transition:transform 0.2s,box-shadow 0.2s; }
+  .score-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.08); }
+  .score-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .score-card.abs::before { background:linear-gradient(90deg,#EF4444,#F97316); }
+  .score-card.turn::before { background:linear-gradient(90deg,#F59E0B,#EAB308); }
+  .score-card.prod::before { background:linear-gradient(90deg,#10B981,#06B6D4); }
+  .score-card.global::before { background:linear-gradient(90deg,var(--blue),var(--teal),var(--purple)); }
+  .card-label { font-size:11px; font-weight:600; letter-spacing:1px; text-transform:uppercase; color:var(--grey-4); margin-bottom:12px; }
+  .card-score { font-family:'Space Grotesk',sans-serif; font-size:42px; font-weight:700; line-height:1; margin-bottom:6px; }
+  .score-card.abs .card-score { color:#EF4444; }
+  .score-card.turn .card-score { color:#F59E0B; }
+  .score-card.prod .card-score { color:#10B981; }
+  .score-card.global .card-score { font-size:52px; background:linear-gradient(135deg,var(--blue),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .card-sub { font-size:12px; color:var(--grey-4); }
+  .risk-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; margin-top:8px; }
+  .risk-vert { background:#D1FAE5; color:#065F46; }
+  .risk-jaune { background:#FEF3C7; color:#92400E; }
+  .risk-orange { background:#FFEDD5; color:#C2410C; }
+  .delta { font-size:12px; font-weight:600; margin-top:4px; }
+  .delta.pos { color:var(--green); }
+  .delta.neg { color:var(--red); }
+  .scori-global { display:flex; flex-direction:column; align-items:center; margin-top:8px; }
+  .scori-face { font-size:48px; animation:float 3s ease-in-out infinite; }
+  .scori-msg { font-size:12px; color:var(--grey-4); text-align:center; margin-top:4px; font-style:italic; }
+  .charts-grid { display:grid; grid-template-columns:1.2fr 1fr; gap:20px; margin-bottom:24px; }
+  .chart-card { background:white; border-radius:var(--radius); padding:24px; border:1px solid var(--grey-2); }
+  .chart-title { font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:700; margin-bottom:4px; }
+  .chart-sub { font-size:12px; color:var(--grey-4); margin-bottom:20px; }
+  .chart-container { position:relative; height:260px; }
+  .dim-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+  .dim-card { background:white; border-radius:12px; padding:16px 20px; border:1px solid var(--grey-2); display:flex; align-items:center; gap:16px; transition:all 0.2s; }
+  .dim-icon { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+  .dim-info { flex:1; }
+  .dim-name { font-size:13px; font-weight:600; margin-bottom:6px; }
+  .dim-source { font-size:10px; color:var(--grey-4); margin-bottom:6px; }
+  .progress-bar { height:6px; background:var(--grey-2); border-radius:3px; overflow:hidden; }
+  .progress-fill { height:100%; border-radius:3px; transition:width 1.5s cubic-bezier(0.4,0,0.2,1); }
+  .dim-score-right { font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:700; min-width:36px; text-align:right; }
+  .questionnaire-wrapper { background:white; border-radius:var(--radius); padding:32px; border:1px solid var(--grey-2); max-width:860px; }
+  .q-role-tabs { display:flex; gap:8px; margin-bottom:24px; }
+  .q-tab { padding:8px 20px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; border:2px solid var(--grey-2); background:white; transition:all 0.2s; }
+  .q-tab.active { border-color:var(--blue); color:var(--blue); }
+  .q-axe { margin-bottom:28px; border-left:3px solid; padding-left:20px; }
+  .q-axe-title { font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:700; margin-bottom:16px; }
+  .q-item { margin-bottom:16px; padding:16px; background:var(--grey-1); border-radius:10px; border:1px solid var(--grey-2); }
+  .q-text { font-size:13px; font-weight:500; margin-bottom:12px; line-height:1.5; }
+  .q-options { display:flex; gap:8px; flex-wrap:wrap; }
+  .q-opt { padding:6px 14px; border-radius:8px; border:1.5px solid var(--grey-3); font-size:12px; font-weight:500; cursor:pointer; transition:all 0.15s; background:white; }
+  .q-opt:hover { border-color:var(--blue); color:var(--blue); }
+  .q-opt.selected { background:var(--blue); border-color:var(--blue); color:white; }
+  .q-source { font-size:10px; color:var(--grey-4); margin-top:8px; font-style:italic; }
+  .interventions-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px; }
+  .intervention-card { background:white; border-radius:12px; padding:20px; border:1px solid var(--grey-2); cursor:pointer; transition:all 0.2s; text-align:center; }
+  .intervention-card:hover { border-color:var(--blue); transform:translateY(-2px); box-shadow:0 8px 20px rgba(26,86,219,0.1); }
+  .intervention-icon { font-size:32px; margin-bottom:10px; }
+  .intervention-name { font-size:14px; font-weight:700; margin-bottom:4px; }
+  .intervention-desc { font-size:12px; color:var(--grey-4); }
+  .delta-preview { background:linear-gradient(135deg,#D1FAE5,#A7F3D0); border-radius:8px; padding:8px 12px; margin-top:10px; font-size:12px; font-weight:600; color:#065F46; }
+  .login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,var(--navy) 0%,#162440 50%,#0F2A3F 100%); position:fixed; inset:0; z-index:1000; }
+  .login-card { background:white; border-radius:20px; padding:40px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,0.3); }
+  .login-logo { display:flex; flex-direction:column; align-items:center; margin-bottom:32px; gap:10px; }
+  .login-mascot { font-size:56px; animation:float 3s ease-in-out infinite; }
+  .login-title { font-family:'Space Grotesk',sans-serif; font-size:28px; font-weight:800; background:linear-gradient(135deg,var(--blue),var(--teal)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .login-sub { font-size:13px; color:var(--grey-4); text-align:center; }
+  .form-group { margin-bottom:16px; }
+  .form-label { font-size:13px; font-weight:600; margin-bottom:6px; display:block; }
+  .form-input { width:100%; padding:12px 14px; border:1.5px solid var(--grey-3); border-radius:10px; font-size:14px; font-family:'Inter',sans-serif; transition:border-color 0.2s; outline:none; }
+  .form-input:focus { border-color:var(--blue); box-shadow:0 0 0 3px rgba(26,86,219,0.1); }
+  .role-select { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:20px; }
+  .role-opt { padding:12px; border:2px solid var(--grey-2); border-radius:10px; text-align:center; cursor:pointer; transition:all 0.2s; }
+  .role-opt.active { border-color:var(--blue); background:linear-gradient(135deg,rgba(26,86,219,0.06),rgba(14,165,160,0.04)); }
+  .role-emoji { font-size:24px; display:block; margin-bottom:4px; }
+  .role-name { font-size:12px; font-weight:600; }
+  .btn-login { width:100%; padding:14px; background:linear-gradient(135deg,var(--blue),var(--teal)); color:white; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; font-family:'Inter',sans-serif; }
+  .timeline-card { background:white; border-radius:var(--radius); padding:24px; border:1px solid var(--grey-2); margin-bottom:24px; }
+  .alert { padding:12px 18px; border-radius:10px; font-size:13px; font-weight:500; display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .alert-warning { background:#FEF3C7; color:#92400E; border:1px solid #FDE68A; }
+  .alert-success { background:#D1FAE5; color:#065F46; border:1px solid #A7F3D0; }
+  .empty-state { text-align:center; padding:60px 20px; color:var(--grey-4); }
+  .empty-icon { font-size:48px; margin-bottom:12px; }
+  .empty-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:6px; }
+  .empty-sub { font-size:14px; }
+</style>
+</head>
+<body>
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-mascot" id="loginMascot">&#128522;</div>
+      <div class="login-title">Scori</div>
+      <div class="login-sub">by Humaniscore &middot; Plateforme QVT pr&eacute;dictive</div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Je suis :</div>
+      <div class="role-select">
+        <div class="role-opt active" onclick="selectRole('manager',this)"><span class="role-emoji">&#128084;</span><span class="role-name">Manager</span></div>
+        <div class="role-opt" onclick="selectRole('salarie',this)"><span class="role-emoji">&#128100;</span><span class="role-name">Salari&eacute;</span></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email professionnel</label>
+      <input type="email" class="form-input" id="loginEmail" placeholder="votre@email.com" value="demo@humaniscore.com">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mot de passe</label>
+      <input type="password" class="form-input" id="loginPass" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" value="demo1234">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Se connecter avec Scori &#10024;</button>
+    <div style="text-align:center;margin-top:16px;font-size:12px;color:#94A3B8;">Mode d&eacute;mo &mdash; donn&eacute;es simul&eacute;es &middot; RGPD conforme</div>
+  </div>
+</div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="scori-brand">
+      <div class="scori-mascot" id="sidebarMascot">&#128522;</div>
+      <div><div class="scori-name">Scori</div><div class="scori-sub">by Humaniscore</div></div>
+    </div>
+  </div>
+  <div class="nav-section">Navigation</div>
+  <a class="nav-item active" onclick="showScreen('dashboard',this)"><span class="nav-icon">&#128202;</span> Dashboard</a>
+  <a class="nav-item" onclick="showScreen('questionnaire',this)"><span class="nav-icon">&#128203;</span> Questionnaire</a>
+  <a class="nav-item" onclick="showScreen('interventions',this)"><span class="nav-icon">&#128134;</span> Interventions</a>
+  <a class="nav-item" onclick="showScreen('evolution',this)"><span class="nav-icon">&#128200;</span> &Eacute;volution</a>
+  <div class="nav-section">Admin</div>
+  <a class="nav-item" onclick="showScreen('equipes',this)"><span class="nav-icon">&#128101;</span> &Eacute;quipes</a>
+  <a class="nav-item" onclick="showScreen('rapports',this)"><span class="nav-icon">&#128196;</span> Rapports</a>
+  <div class="sidebar-footer">
+    <div class="user-badge">
+      <div class="avatar" id="userAvatar">DH</div>
+      <div class="user-info"><div class="user-name" id="userName">Demo Humaniscore</div><div class="user-role" id="userRole">Manager</div></div>
+    </div>
+  </div>
+</nav>
+<main class="main" id="mainApp" style="display:none;">
+  <div class="topbar">
+    <div class="page-title" id="pageTitle">Dashboard QVT</div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" onclick="showScreen('questionnaire',null)">&#128203; Nouveau questionnaire</button>
+      <button class="btn btn-primary">&#11015;&#65039; Exporter rapport</button>
+    </div>
+  </div>
+  <div class="content">
+    <div class="screen active" id="screen-dashboard">
+      <div class="alert alert-warning">&#9888;&#65039; <strong>Campagne T0 en cours</strong> &mdash; 8 salari&eacute;s ont r&eacute;pondu sur 24</div>
+      <div class="hero-grid">
+        <div class="score-card abs"><div class="card-label">&#128308; Risque Absent&eacute;isme</div><div class="card-score" id="scoreAbs">&ndash;</div><div class="card-sub">Score de ma&icirc;trise /100</div><div class="risk-badge risk-orange" id="badgeAbs">&#9888;&#65039; Mod&eacute;r&eacute;</div><div class="delta neg" id="deltaAbs"></div></div>
+        <div class="score-card turn"><div class="card-label">&#128993; Risque Turnover</div><div class="card-score" id="scoreTurn">&ndash;</div><div class="card-sub">Score de ma&icirc;trise /100</div><div class="risk-badge risk-jaune" id="badgeTurn">&#9888;&#65039; &Agrave; surveiller</div><div class="delta pos" id="deltaTurn"></div></div>
+        <div class="score-card prod"><div class="card-label">&#128994; Productivit&eacute;</div><div class="card-score" id="scoreProd">&ndash;</div><div class="card-sub">Score pr&eacute;visionnel /100</div><div class="risk-badge risk-vert" id="badgeProd">&#9989; Bon niveau</div><div class="delta pos" id="deltaProd"></div></div>
+        <div class="score-card global"><div class="card-label">&#10024; Humaniscore Global</div><div class="card-score" id="scoreGlobal">&ndash;</div><div class="card-sub">Score composite /100</div><div class="scori-global"><div class="scori-face" id="scoriFace">&#128528;</div><div class="scori-msg" id="scoriMsg">Calcul en cours...</div></div></div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card"><div class="chart-title">Radar des dimensions</div><div class="chart-sub">10 dimensions man&eacute;geriales</div><div class="chart-container"><canvas id="radarChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">&Eacute;volution Humaniscore</div><div class="chart-sub">Impact des interventions</div><div class="chart-container"><canvas id="lineChart"></canvas></div></div>
+      </div>
+      <div style="margin-bottom:16px;"><div class="chart-title">D&eacute;tail des 14 dimensions</div><div style="font-size:12px;color:var(--grey-4);margin-top:4px;margin-bottom:16px;">Manager (10) + Salari&eacute; (4)</div></div>
+      <div class="dim-grid" id="dimGrid"></div>
+    </div>
+    <div class="screen" id="screen-questionnaire">
+      <div class="questionnaire-wrapper">
+        <div style="margin-bottom:32px;"><h2 style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:800;margin-bottom:6px;">Questionnaire Scori</h2><p style="font-size:13px;color:var(--grey-4);">Vos r&eacute;ponses sont confidentielles &middot; Dur&eacute;e estim&eacute;e : 8 minutes</p></div>
+        <div class="q-role-tabs">
+          <button class="q-tab active" onclick="switchQuestionnaire('manager',this)">&#128084; Version Manager</button>
+          <button class="q-tab" onclick="switchQuestionnaire('salarie',this)">&#128100; Version Salari&eacute;</button>
+        </div>
+        <div id="questionnaireContent"></div>
+        <div style="margin-top:28px;display:flex;justify-content:flex-end;gap:12px;">
+          <button class="btn btn-ghost">Sauvegarder brouillon</button>
+          <button class="btn btn-primary" onclick="submitQuestionnaire()">Soumettre et calculer mon score &#10024;</button>
+        </div>
+      </div>
+    </div>
+    <div class="screen" id="screen-interventions">
+      <div style="margin-bottom:24px;"><h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">Interventions disponibles</h2></div>
+      <div class="interventions-grid" id="interventionsGrid"></div>
+      <div class="timeline-card"><div class="chart-title">Historique des interventions</div><div style="height:200px;"><canvas id="interventionChart"></canvas></div></div>
+    </div>
+    <div class="screen" id="screen-evolution">
+      <div class="alert alert-success">&#9989; <strong>Progression +8.4 points</strong> depuis le d&eacute;but de la d&eacute;marche</div>
+      <div class="charts-grid">
+        <div class="chart-card"><div class="chart-title">&Eacute;volution des 3 scores pr&eacute;dictifs</div><div class="chart-sub">T0 &rarr; T4</div><div class="chart-container"><canvas id="evolutionChart"></canvas></div></div>
+        <div class="chart-card"><div class="chart-title">ROI estim&eacute; des interventions</div><div class="chart-sub">Co&ucirc;t moyen absent&eacute;isme : 3 500&euro;/salari&eacute;/an</div><div class="chart-container"><canvas id="roiChart"></canvas></div></div>
+      </div>
+    </div>
+    <div class="screen" id="screen-equipes"><div class="empty-state"><div class="empty-icon">&#128101;</div><div class="empty-title">Gestion des &eacute;quipes</div><div class="empty-sub">Connectez Scori &agrave; votre base Supabase</div><button class="btn btn-primary" style="margin:20px auto;display:flex;">+ Ajouter une &eacute;quipe</button></div></div>
+    <div class="screen" id="screen-rapports"><div class="empty-state"><div class="empty-icon">&#128196;</div><div class="empty-title">G&eacute;n&eacute;ration de rapports</div><div class="empty-sub">Export DUERP, rapport d&apos;intervention, synth&egrave;se DRH</div><button class="btn btn-primary" style="margin:20px auto;display:flex;">G&eacute;n&eacute;rer la DUERP</button></div></div>
+  </div>
+</main>
+<script>
+const SCORES_DEMO={abs:52,turn:61,prod:74,global:61.5,delta:{abs:-3.2,turn:2.1,prod:1.8,global:0.7}};
+const DIMENSIONS=[
+  {code:'SME',name:'Engagement direction Mesure',axe:'Manager',score:14,icon:'🎯',color:'#1A56DB'},
+  {code:'SMI',name:'Engagement direction Mise en oeuvre',axe:'Manager',score:12,icon:'⚙️',color:'#1A56DB'},
+  {code:'SCS',name:'Cohesion Climat social',axe:'Manager',score:11,icon:'🤝',color:'#0EA5A0'},
+  {code:'SI',name:'Cohesion Impact',axe:'Manager',score:8,icon:'💡',color:'#0EA5A0'},
+  {code:'SA',name:'RPS Autonomie',axe:'Manager',score:13,icon:'🔓',color:'#F59E0B'},
+  {code:'SE',name:'RPS Exigence psychologique',axe:'Manager',score:7,icon:'⚡',color:'#F59E0B'},
+  {code:'SS',name:'RPS Soutien social',axe:'Manager',score:10,icon:'💬',color:'#F59E0B'},
+  {code:'SFB',name:'TMS Facteur biomecanique',axe:'Manager',score:9,icon:'🦴',color:'#7C3AED'},
+  {code:'SSI',name:'TMS Suivi',axe:'Manager',score:15,icon:'🩺',color:'#7C3AED'},
+  {code:'SE2',name:'TMS Environnement',axe:'Manager',score:16,icon:'🪑',color:'#7C3AED'},
+  {code:'SER',name:'Engagement Reconnaissance',axe:'Salarie',score:11,icon:'⭐',color:'#10B981'},
+  {code:'SRC',name:'Relations Collectif',axe:'Salarie',score:9,icon:'👥',color:'#10B981'},
+  {code:'SVP',name:'Vecu Psychosocial',axe:'Salarie',score:8,icon:'🧠',color:'#EF4444'},
+  {code:'SSP',name:'Sante Physique',axe:'Salarie',score:13,icon:'💪',color:'#10B981'},
+];
+const QUESTIONS_MANAGER=[
+  {axe:'Engagement Direction',color:'#1A56DB',icon:'🎯',questions:[
+    {code:'ER1',text:'La direction a inscrit le risque de TMS/RPS dans le DUERP.',source:'OR=1.39'},
+    {code:'ER2',text:'Un comite de pilotage prevention TMS/RPS est en place.',source:'RR=2.71'},
+    {code:'ER3',text:'La demarche prevention est decrite avec objectifs definis.',source:'β=0.630'},
+  ]},
+  {axe:'Cohesion Implication',color:'#0EA5A0',icon:'🤝',questions:[
+    {code:'CI1',text:'Le diagnostic de risque fait objet de presentation formelle.',source:'HR=1.44'},
+    {code:'CI2',text:'Les salaries participent a la prevention des TMS/RPS.',source:'HR=1.28'},
+  ]},
+  {axe:'Risques Psychosociaux Karasek',color:'#F59E0B',icon:'⚡',questions:[
+    {code:'RPS1',text:"Les membres de l'equipe disposent d'une autonomie suffisante.",source:'HR=0.80'},
+    {code:'RPS2',text:'La charge de travail est adaptee aux ressources disponibles.',source:'RR=2.25'},
+    {code:'RPS3',text:"Un climat de collaboration est encourage au sein de l'equipe.",source:'OR=0.94'},
+  ]},
+  {axe:'Troubles Musculosquelettiques',color:'#7C3AED',icon:'🦴',questions:[
+    {code:'TMS1',text:'Les postes de travail permettent une posture confortable.',source:'RR=0.88'},
+    {code:'TMS2',text:'Des actions correctives sont mises en oeuvre apres identification de douleurs.',source:'HR=1.77'},
+  ]},
+];
+const INTERVENTIONS_DATA=[
+  {icon:'💆',name:'Massage kine',desc:'Seance de massage par un etudiant en kinesitherapie',delta:'+4.2',duree:'20 min'},
+  {icon:'🧘',name:'Sophrologie',desc:'Seance de relaxation et gestion du stress',delta:'+3.8',duree:'45 min'},
+  {icon:'🧠',name:'RDV psychologue',desc:'Consultation individuelle avec un psychologue du travail',delta:'+5.1',duree:'50 min'},
+  {icon:'🏃',name:'Activite physique',desc:'Atelier de remise en mouvement guide',delta:'+3.2',duree:'30 min'},
+  {icon:'🎯',name:'Formation manager',desc:'Formation aux pratiques manageriales preventives',delta:'+6.8',duree:'3h'},
+  {icon:'🍎',name:'Nutrition',desc:'Atelier nutrition bien-etre au travail',delta:'+2.1',duree:'1h'},
+];
+let selectedRole='manager';const answers={};
+function selectRole(role,el){selectedRole=role;document.querySelectorAll('.role-opt').forEach(e=>e.classList.remove('active'));el.classList.add('active');document.getElementById('loginMascot').textContent=role==='manager'?'👔':'😊';}
+function doLogin(){const email=document.getElementById('loginEmail').value;if(!email)return;const ls=document.getElementById('loginScreen');ls.style.opacity='0';ls.style.transform='scale(0.95)';ls.style.transition='all 0.4s ease';setTimeout(()=>{ls.style.display='none';const app=document.getElementById('mainApp');app.style.display='flex';app.style.flexDirection='column';const name=email.split('@')[0].replace(/\./g,' ').replace(/\b\w/g,c=>c.toUpperCase());document.getElementById('userName').textContent=name;document.getElementById('userRole').textContent=selectedRole==='manager'?'Manager':'Salarie';document.getElementById('userAvatar').textContent=name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();initDashboard();renderDimensions();renderQuestionnaire();renderInterventions();},500);}
+function showScreen(id,navEl){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+id).classList.add('active');if(navEl){document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));navEl.classList.add('active');}const titles={dashboard:'Dashboard QVT',questionnaire:'Questionnaire Scori',interventions:'Interventions',evolution:'Evolution ROI',equipes:'Gestion equipes',rapports:'Rapports'};document.getElementById('pageTitle').textContent=titles[id]||id;if(id==='evolution')renderEvolutionCharts();if(id==='interventions')renderInterventionChart();}
+function initDashboard(){['scoreAbs','scoreTurn','scoreProd','scoreGlobal'].forEach((id,i)=>animateScore(id,[SCORES_DEMO.abs,SCORES_DEMO.turn,SCORES_DEMO.prod,SCORES_DEMO.global][i]));document.getElementById('deltaAbs').innerHTML='▼ '+Math.abs(SCORES_DEMO.delta.abs)+' pts vs T-1';document.getElementById('deltaTurn').innerHTML='▲ +'+SCORES_DEMO.delta.turn+' pts vs T-1';document.getElementById('deltaProd').innerHTML='▲ +'+SCORES_DEMO.delta.prod+' pts vs T-1';setTimeout(()=>updateScoriMascot(SCORES_DEMO.global),1500);renderRadarChart();renderLineChart();}
+function animateScore(id,target){const el=document.getElementById(id);let c=0;const s=target/60;const t=setInterval(()=>{c=Math.min(c+s,target);el.textContent=c.toFixed(1);if(c>=target){clearInterval(t);el.textContent=target.toFixed(1);}},16);}
+function updateScoriMascot(score){const face=document.getElementById('scoriFace');const msg=document.getElementById('scoriMsg');if(score>=80){face.textContent='😄';msg.textContent='Excellent ! Continuez ainsi 🎉';}else if(score>=60){face.textContent='🙂';msg.textContent='Bon niveau quelques axes a renforcer';}else if(score>=40){face.textContent='😐';msg.textContent='Des interventions sont recommandees';}else{face.textContent='😟';msg.textContent='Attention plan action urgent';}document.getElementById('sidebarMascot').textContent=face.textContent;}
+function renderRadarChart(){const ctx=document.getElementById('radarChart');if(!ctx)return;new Chart(ctx,{type:'radar',data:{labels:DIMENSIONS.slice(0,10).map(d=>d.code),datasets:[{label:'Score',data:DIMENSIONS.slice(0,10).map(d=>d.score),backgroundColor:'rgba(26,86,219,0.12)',borderColor:'#1A56DB',borderWidth:2,pointBackgroundColor:'#1A56DB',pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{min:0,max:20,ticks:{stepSize:5,font:{size:10}}}},plugins:{legend:{display:false}}}});}
+function renderLineChart(){const ctx=document.getElementById('lineChart');if(!ctx)return;new Chart(ctx,{type:'line',data:{labels:['T0','Massage','Sophro','T1','Formation','T2'],datasets:[{label:'Humaniscore',data:[53,55.2,57.1,58.3,62.4,61.5],borderColor:'#1A56DB',backgroundColor:'rgba(26,86,219,0.08)',borderWidth:2.5,fill:true,tension:0.4,pointRadius:5,pointBackgroundColor:'#1A56DB'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:40,max:80},x:{grid:{display:false}}}}});}
+function renderDimensions(){const grid=document.getElementById('dimGrid');grid.innerHTML=DIMENSIONS.map(d=>{const pct=(d.score/20)*100;const rc=pct>=70?'#10B981':pct>=50?'#F59E0B':'#EF4444';return'<div class="dim-card"><div class="dim-icon" style="background:'+d.color+'18;">'+d.icon+'</div><div class="dim-info"><div class="dim-name">'+d.name+'</div><div class="dim-source">'+d.axe+' '+d.code+'</div><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%;background:'+rc+';" data-width="'+pct+'"></div></div></div><div class="dim-score-right" style="color:'+rc+'">'+d.score+'</div></div>';}).join('');setTimeout(()=>{document.querySelectorAll('.progress-fill').forEach(bar=>{bar.style.width=bar.dataset.width+'%';});},100);}
+function renderQuestionnaire(){document.getElementById('questionnaireContent').innerHTML=QUESTIONS_MANAGER.map(axe=>'<div class="q-axe" style="border-color:'+axe.color+'"><div class="q-axe-title" style="color:'+axe.color+'">'+axe.icon+' '+axe.axe+'</div>'+axe.questions.map(q=>'<div class="q-item"><div class="q-text">'+q.text+'</div><div class="q-options">'+['Jamais','Rarement','Parfois','Toujours'].map((opt,i)=>'<div class="q-opt" onclick="selectAnswer(\''+q.code+'\','+( i+1)+',this)">'+opt+'</div>').join('')+'</div><div class="q-source">Source: '+q.source+'</div></div>').join('')+'</div>').join('');}
+function switchQuestionnaire(type,el){document.querySelectorAll('.q-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');renderQuestionnaire();}
+function selectAnswer(code,val,el){el.closest('.q-options').querySelectorAll('.q-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');answers[code]=val;}
+function submitQuestionnaire(){alert('Scori calcule votre score!\n'+Object.keys(answers).length+' questions repondues.');showScreen('dashboard',document.querySelector('.nav-item'));}
+function renderInterventions(){document.getElementById('interventionsGrid').innerHTML=INTERVENTIONS_DATA.map(iv=>'<div class="intervention-card" onclick="logIntervention(\''+iv.name+'\')"><div class="intervention-icon">'+iv.icon+'</div><div class="intervention-name">'+iv.name+'</div><div class="intervention-desc">'+iv.desc+'</div><div style="font-size:11px;color:var(--grey-4);margin-top:6px;">'+iv.duree+'</div><div class="delta-preview">Impact estime: '+iv.delta+' pts</div></div>').join('');}
+function logIntervention(name){alert('Intervention: '+name+'\nEn production le Humaniscore se met a jour en temps reel.');}
+function renderInterventionChart(){const ctx=document.getElementById('interventionChart');if(!ctx||ctx.chart)return;ctx.chart=new Chart(ctx,{type:'bar',data:{labels:INTERVENTIONS_DATA.map(i=>i.icon+' '+i.name),datasets:[{label:'Delta',data:INTERVENTIONS_DATA.map(i=>parseFloat(i.delta)),backgroundColor:INTERVENTIONS_DATA.map(()=>'rgba(16,185,129,0.7)'),borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}});}
+function renderEvolutionCharts(){const ctx1=document.getElementById('evolutionChart');if(ctx1&&!ctx1.chart){ctx1.chart=new Chart(ctx1,{type:'line',data:{labels:['T0','T1','T2','T3','T4'],datasets:[{label:'Absenteisme',data:[52,54,56,59,61],borderColor:'#EF4444',tension:0.4,fill:false},{label:'Turnover',data:[58,60,62,63,65],borderColor:'#F59E0B',tension:0.4,fill:false},{label:'Productivite',data:[68,70,72,74,76],borderColor:'#10B981',tension:0.4,fill:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{y:{min:40,max:85},x:{grid:{display:false}}}}});}const ctx2=document.getElementById('roiChart');if(ctx2&&!ctx2.chart){ctx2.chart=new Chart(ctx2,{type:'bar',data:{labels:['Massage','Sophrologie','RDV Psy','Activite','Formation'],datasets:[{label:'ROI',data:[850,760,1020,640,1360],backgroundColor:['#1A56DB','#0EA5A0','#7C3AED','#10B981','#F59E0B'],borderRadius:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true},x:{grid:{display:false}}}}});}}
+</script>
+</body>
+</html>
