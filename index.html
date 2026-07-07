@@ -653,7 +653,7 @@
 
   .btn-login:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.4); }
 
-  /* ?? TIMELINE DELTA ?? */
+  /* ── TIMELINE DELTA ── */
   .timeline-card {
     background: white;
     border-radius: var(--radius);
@@ -662,7 +662,7 @@
     margin-bottom: 24px;
   }
 
-  /* ?? ALERT BANNER ?? */
+  /* ── ALERT BANNER ── */
   .alert {
     padding: 12px 18px;
     border-radius: 10px;
@@ -677,7 +677,7 @@
   .alert-warning { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
   .alert-success { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
 
-  /* ?? EMPTY STATE ?? */
+  /* ── EMPTY STATE ── */
   .empty-state {
     text-align: center;
     padding: 60px 20px;
@@ -696,52 +696,52 @@
 </head>
 <body>
 
-<!-- ????????????????????????????????????????????
-     �CRAN R�INITIALISATION MOT DE PASSE
-???????????????????????????????????????????? -->
+<!-- ════════════════════════════════════════════
+     ÉCRAN RÉINITIALISATION MOT DE PASSE
+════════════════════════════════════════════ -->
 <div class="login-screen" id="resetScreen" style="display:none;">
   <div class="login-card">
     <div class="login-logo">
-      <div class="login-mascot">??</div>
+      <div class="login-mascot">🔐</div>
       <div class="login-title">Nouveau mot de passe</div>
       <div class="login-sub">Scori by Humaniscore</div>
     </div>
     <div class="form-group">
       <label class="form-label">Nouveau mot de passe</label>
-      <input type="password" class="form-input" id="newPass" placeholder="????????">
+      <input type="password" class="form-input" id="newPass" placeholder="••••••••">
     </div>
     <div class="form-group">
       <label class="form-label">Confirmer le mot de passe</label>
-      <input type="password" class="form-input" id="newPassConfirm" placeholder="????????">
+      <input type="password" class="form-input" id="newPassConfirm" placeholder="••••••••">
     </div>
     <button class="btn-login" onclick="doResetPassword()">
-      Enregistrer le mot de passe ?
+      Enregistrer le mot de passe ✨
     </button>
     <div id="resetMsg" style="text-align:center;margin-top:12px;font-size:13px;color:#10B981;display:none;"></div>
   </div>
 </div>
 
-<!-- ????????????????????????????????????????????
-     �CRAN DE CONNEXION
-???????????????????????????????????????????? -->
+<!-- ════════════════════════════════════════════
+     ÉCRAN DE CONNEXION
+════════════════════════════════════════════ -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="login-mascot" id="loginMascot">??</div>
+      <div class="login-mascot" id="loginMascot">😊</div>
       <div class="login-title">Scori</div>
-      <div class="login-sub">by Humaniscore � Plateforme QVT pr�dictive</div>
+      <div class="login-sub">by Humaniscore · Plateforme QVT prédictive</div>
     </div>
 
     <div style="margin-bottom:16px;">
       <div style="font-size:13px;font-weight:600;margin-bottom:8px;">Je suis :</div>
       <div class="role-select">
         <div class="role-opt active" onclick="selectRole('manager', this)">
-          <span class="role-emoji">??</span>
+          <span class="role-emoji">👔</span>
           <span class="role-name">Manager</span>
         </div>
         <div class="role-opt" onclick="selectRole('salarie', this)">
-          <span class="role-emoji">??</span>
-          <span class="role-name">Salari�</span>
+          <span class="role-emoji">👤</span>
+          <span class="role-name">Salarié</span>
         </div>
       </div>
     </div>
@@ -753,26 +753,26 @@
 
     <div class="form-group">
       <label class="form-label">Mot de passe</label>
-      <input type="password" class="form-input" id="loginPass" placeholder="????????">
+      <input type="password" class="form-input" id="loginPass" placeholder="••••••••">
     </div>
 
     <button class="btn-login" onclick="doLogin()">
-      Se connecter avec Scori ?
+      Se connecter avec Scori ✨
     </button>
 
     <div style="text-align:center;margin-top:16px;font-size:12px;color:#94A3B8;">
-      Mode d�mo ? donn�es simul�es � RGPD conforme � H�berg� en France
+      Données réelles · RGPD conforme · Hébergé dans l’Union européenne
     </div>
   </div>
 </div>
 
-<!-- ????????????????????????????????????????????
+<!-- ════════════════════════════════════════════
      SIDEBAR
-???????????????????????????????????????????? -->
+════════════════════════════════════════════ -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="scori-brand">
-      <div class="scori-mascot" id="sidebarMascot">??</div>
+      <div class="scori-mascot" id="sidebarMascot">😊</div>
       <div>
         <div class="scori-name">Scori</div>
         <div class="scori-sub">by Humaniscore</div>
@@ -783,24 +783,24 @@
   <div class="nav-section">Navigation</div>
 
   <a class="nav-item active" onclick="showScreen('dashboard', this)">
-    <span class="nav-icon">??</span> Dashboard
+    <span class="nav-icon">📊</span> Dashboard
   </a>
   <a class="nav-item" onclick="showScreen('questionnaire', this)">
-    <span class="nav-icon">??</span> Questionnaire
+    <span class="nav-icon">📋</span> Questionnaire
   </a>
   <a class="nav-item" onclick="showScreen('interventions', this)">
-    <span class="nav-icon">??</span> Interventions
+    <span class="nav-icon">💆</span> Interventions
   </a>
   <a class="nav-item" onclick="showScreen('evolution', this)">
-    <span class="nav-icon">??</span> �volution
+    <span class="nav-icon">📈</span> Évolution
   </a>
 
   <div class="nav-section">Admin</div>
   <a class="nav-item" onclick="showScreen('equipes', this)">
-    <span class="nav-icon">??</span> �quipes
+    <span class="nav-icon">👥</span> Équipes
   </a>
   <a class="nav-item" onclick="showScreen('rapports', this)">
-    <span class="nav-icon">??</span> Rapports
+    <span class="nav-icon">📄</span> Rapports
   </a>
 
   <div class="sidebar-footer">
@@ -814,62 +814,62 @@
   </div>
 </nav>
 
-<!-- ????????????????????????????????????????????
+<!-- ════════════════════════════════════════════
      MAIN
-???????????????????????????????????????????? -->
+════════════════════════════════════════════ -->
 <main class="main" id="mainApp" style="display:none;">
 
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="page-title" id="pageTitle">Dashboard QVT</div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost" onclick="showScreen('questionnaire', null)">?? Nouveau questionnaire</button>
-      <button class="btn btn-primary">?? Exporter rapport</button>
+      <button class="btn btn-ghost" onclick="showScreen('questionnaire', null)">📋 Nouveau questionnaire</button>
+      <button class="btn btn-primary">⬇️ Exporter rapport</button>
     </div>
   </div>
 
   <!-- CONTENT -->
   <div class="content">
 
-    <!-- ?? DASHBOARD ?? -->
+    <!-- ── DASHBOARD ── -->
     <div class="screen active" id="screen-dashboard">
 
       <div class="alert alert-warning">
-        ?? <strong>Campagne T0 en cours</strong> ? 8 salari�s ont r�pondu sur 24 � R�sultats pr�liminaires
+        ⚠️ <strong>Campagne T0 en cours</strong> — 8 salariés ont répondu sur 24 · Résultats préliminaires
       </div>
 
       <!-- Scores hero -->
       <div class="hero-grid">
         <div class="score-card abs">
-          <div class="card-label">?? Risque Absent�isme</div>
-          <div class="card-score" id="scoreAbs">?</div>
-          <div class="card-sub">Score de ma�trise /100</div>
-          <div class="risk-badge risk-orange" id="badgeAbs">?? Mod�r�</div>
+          <div class="card-label">🔴 Risque Absentéisme</div>
+          <div class="card-score" id="scoreAbs">–</div>
+          <div class="card-sub">Score de maîtrise /100</div>
+          <div class="risk-badge risk-orange" id="badgeAbs">⚠️ Modéré</div>
           <div class="delta neg" id="deltaAbs"></div>
         </div>
 
         <div class="score-card turn">
-          <div class="card-label">?? Risque Turnover</div>
-          <div class="card-score" id="scoreTurn">?</div>
-          <div class="card-sub">Score de ma�trise /100</div>
-          <div class="risk-badge risk-jaune" id="badgeTurn">?? � surveiller</div>
+          <div class="card-label">🟡 Risque Turnover</div>
+          <div class="card-score" id="scoreTurn">–</div>
+          <div class="card-sub">Score de maîtrise /100</div>
+          <div class="risk-badge risk-jaune" id="badgeTurn">⚠️ À surveiller</div>
           <div class="delta pos" id="deltaTurn"></div>
         </div>
 
         <div class="score-card prod">
-          <div class="card-label">?? Productivit�</div>
-          <div class="card-score" id="scoreProd">?</div>
-          <div class="card-sub">Score pr�visionnel /100</div>
-          <div class="risk-badge risk-vert" id="badgeProd">? Bon niveau</div>
+          <div class="card-label">🟢 Productivité</div>
+          <div class="card-score" id="scoreProd">–</div>
+          <div class="card-sub">Score prévisionnel /100</div>
+          <div class="risk-badge risk-vert" id="badgeProd">✅ Bon niveau</div>
           <div class="delta pos" id="deltaProd"></div>
         </div>
 
         <div class="score-card global">
-          <div class="card-label">? Humaniscore Global</div>
-          <div class="card-score" id="scoreGlobal">?</div>
+          <div class="card-label">✨ Humaniscore Global</div>
+          <div class="card-score" id="scoreGlobal">–</div>
           <div class="card-sub">Score composite /100</div>
           <div class="scori-global">
-            <div class="scori-face" id="scoriFace">??</div>
+            <div class="scori-face" id="scoriFace">😐</div>
             <div class="scori-msg" id="scoriMsg">Calcul en cours...</div>
           </div>
         </div>
@@ -879,14 +879,14 @@
       <div class="charts-grid">
         <div class="chart-card">
           <div class="chart-title">Radar des dimensions</div>
-          <div class="chart-sub">10 dimensions manag�riales � Score actuel</div>
+          <div class="chart-sub">14 dimensions · Scores en temps réel</div>
           <div class="chart-container">
             <canvas id="radarChart"></canvas>
           </div>
         </div>
 
         <div class="chart-card">
-          <div class="chart-title">�volution Humaniscore</div>
+          <div class="chart-title">Évolution Humaniscore</div>
           <div class="chart-sub">Impact des interventions dans le temps</div>
           <div class="chart-container">
             <canvas id="lineChart"></canvas>
@@ -896,15 +896,15 @@
 
       <!-- Dimensions -->
       <div style="margin-bottom:16px;">
-        <div class="chart-title">D�tail des 14 dimensions</div>
-        <div style="font-size:12px;color:var(--grey-4);margin-top:4px;margin-bottom:16px;">Manager (10) + Salari� (4) � Cliquez pour voir le d�tail</div>
+        <div class="chart-title">Détail des 14 dimensions</div>
+        <div style="font-size:12px;color:var(--grey-4);margin-top:4px;margin-bottom:16px;">Manager (10) + Salarié (4) · Cliquez pour voir le détail</div>
       </div>
 
       <div class="dim-grid" id="dimGrid"></div>
 
     </div>
 
-    <!-- ?? QUESTIONNAIRE ?? -->
+    <!-- ── QUESTIONNAIRE ── -->
     <div class="screen" id="screen-questionnaire">
       <div class="questionnaire-wrapper">
         <div class="q-header">
@@ -912,13 +912,13 @@
             Questionnaire Scori
           </h2>
           <p style="font-size:13px;color:var(--grey-4);">
-            Vos r�ponses sont confidentielles � Dur�e estim�e : 8 minutes
+            Vos réponses sont confidentielles · Durée estimée : 8 minutes
           </p>
         </div>
 
         <div class="q-role-tabs">
-          <button class="q-tab active" onclick="switchQuestionnaire('manager', this)">?? Version Manager</button>
-          <button class="q-tab" onclick="switchQuestionnaire('salarie', this)">?? Version Salari�</button>
+          <button class="q-tab active" onclick="switchQuestionnaire('manager', this)">👔 Version Manager</button>
+          <button class="q-tab" onclick="switchQuestionnaire('salarie', this)">👤 Version Salarié</button>
         </div>
 
         <div id="questionnaireContent"></div>
@@ -926,47 +926,47 @@
         <div style="margin-top:28px;display:flex;justify-content:flex-end;gap:12px;">
           <button class="btn btn-ghost">Sauvegarder brouillon</button>
           <button class="btn btn-primary" onclick="submitQuestionnaire()">
-            Soumettre et calculer mon score ?
+            Soumettre et calculer mon score ✨
           </button>
         </div>
       </div>
     </div>
 
-    <!-- ?? INTERVENTIONS ?? -->
+    <!-- ── INTERVENTIONS ── -->
     <div class="screen" id="screen-interventions">
       <div style="margin-bottom:24px;">
         <h2 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;margin-bottom:6px;">Interventions disponibles</h2>
-        <p style="font-size:13px;color:var(--grey-4);">Chaque intervention am�liore le Humaniscore de votre �quipe. L'effet est calcul� en temps r�el.</p>
+        <p style="font-size:13px;color:var(--grey-4);">Chaque intervention améliore le Humaniscore de votre équipe. L'effet est calculé en temps réel.</p>
       </div>
 
       <div class="interventions-grid" id="interventionsGrid"></div>
 
       <div class="timeline-card">
         <div class="chart-title">Historique des interventions</div>
-        <div class="chart-sub" style="margin-bottom:16px;">Effet am�lioratif cumul� sur le Humaniscore</div>
+        <div class="chart-sub" style="margin-bottom:16px;">Effet amélioratif cumulé sur le Humaniscore</div>
         <div style="height:200px;">
           <canvas id="interventionChart"></canvas>
         </div>
       </div>
     </div>
 
-    <!-- ?? �VOLUTION ?? -->
+    <!-- ── ÉVOLUTION ── -->
     <div class="screen" id="screen-evolution">
       <div class="alert alert-success">
-        ? <strong>Progression +8.4 points</strong> depuis le d�but de la d�marche ? Bravo � l'�quipe !
+        ✅ <strong>Progression +8.4 points</strong> depuis le début de la démarche — Bravo à l'équipe !
       </div>
 
       <div class="charts-grid">
         <div class="chart-card">
-          <div class="chart-title">�volution des 3 scores pr�dictifs</div>
-          <div class="chart-sub">T0 ? T4 � Impact des interventions</div>
+          <div class="chart-title">Évolution des 3 scores prédictifs</div>
+          <div class="chart-sub">T0 → T4 · Impact des interventions</div>
           <div class="chart-container">
             <canvas id="evolutionChart"></canvas>
           </div>
         </div>
         <div class="chart-card">
-          <div class="chart-title">ROI estim� des interventions</div>
-          <div class="chart-sub">Co�t moyen absent�isme : 3 500?/salari�/an</div>
+          <div class="chart-title">ROI estimé des interventions</div>
+          <div class="chart-sub">Coût moyen absentéisme : 3 500€/salarié/an</div>
           <div class="chart-container">
             <canvas id="roiChart"></canvas>
           </div>
@@ -974,23 +974,23 @@
       </div>
     </div>
 
-    <!-- ?? �QUIPES ?? -->
+    <!-- ── ÉQUIPES ── -->
     <div class="screen" id="screen-equipes">
       <div class="empty-state">
-        <div class="empty-icon">??</div>
-        <div class="empty-title">Gestion des �quipes</div>
-        <div class="empty-sub">Connectez Scori � votre base Supabase pour g�rer vos �quipes</div>
-        <button class="btn btn-primary" style="margin:20px auto;display:flex;">+ Ajouter une �quipe</button>
+        <div class="empty-icon">👥</div>
+        <div class="empty-title">Gestion des équipes</div>
+        <div class="empty-sub">Connectez Scori à votre base Supabase pour gérer vos équipes</div>
+        <button class="btn btn-primary" style="margin:20px auto;display:flex;">+ Ajouter une équipe</button>
       </div>
     </div>
 
-    <!-- ?? RAPPORTS ?? -->
+    <!-- ── RAPPORTS ── -->
     <div class="screen" id="screen-rapports">
       <div class="empty-state">
-        <div class="empty-icon">??</div>
-        <div class="empty-title">G�n�ration de rapports</div>
-        <div class="empty-sub">Export DUERP, rapport d'intervention, synth�se DRH</div>
-        <button class="btn btn-primary" style="margin:20px auto;display:flex;">G�n�rer la DUERP</button>
+        <div class="empty-icon">📄</div>
+        <div class="empty-title">Génération de rapports</div>
+        <div class="empty-sub">Export DUERP, rapport d'intervention, synthèse DRH</div>
+        <button class="btn btn-primary" style="margin:20px auto;display:flex;">Générer la DUERP</button>
       </div>
     </div>
 
