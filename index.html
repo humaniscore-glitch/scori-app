@@ -1005,7 +1005,7 @@
 
 const SUPABASE_URL = 'https://lqkhwnyxeyitrbvkqhew.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxxa2h3bnl4ZXlpdHJidmtxaGV3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyMTI2MjMsImV4cCI6MjA4ODc4ODYyM30.vuQv8lKVpv_VcwaHx3aLKU2Ze3uB7ZXn2Ei0j-Lzul4';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ── État global ──
 let PROFILE = null;        // { id, role, equipe_id, entreprise_id, email, nom, prenom }
@@ -1041,13 +1041,13 @@ async function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const password = document.getElementById('loginPass').value;
   if (!email || !password) return;
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) { alert('Erreur de connexion : ' + error.message); return; }
   await initApp();
 }
 
 async function doLogout() {
-  await supabase.auth.signOut();
+  await sb.auth.signOut();
   location.reload();
 }
 
@@ -1057,7 +1057,7 @@ async function doResetPassword() {
   const msg = document.getElementById('resetMsg');
   if (!pass || pass.length < 8) { alert('Le mot de passe doit contenir au moins 8 caractères.'); return; }
   if (pass !== confirm) { alert('Les mots de passe ne correspondent pas.'); return; }
-  const { error } = await supabase.auth.updateUser({ password: pass });
+  const { error } = await sb.auth.updateUser({ password: pass });
   if (error) { alert('Erreur : ' + error.message); return; }
   msg.style.display = 'block';
   msg.textContent = '✅ Mot de passe enregistré ! Ouverture de Scori...';
@@ -1071,16 +1071,16 @@ async function doResetPassword() {
 
 async function initApp() {
   // Profil
-  const { data: prof, error: e1 } = await supabase.rpc('get_my_profile');
+  const { data: prof, error: e1 } = await sb.rpc('get_my_profile');
   if (e1 || !prof || !prof.length) {
     alert("Votre compte n'est pas encore rattaché à une entreprise. Contactez Humaniscore (humaniscore@gmail.com).");
-    await supabase.auth.signOut();
+    await sb.auth.signOut();
     return;
   }
   PROFILE = prof[0];
 
   // Campagne en cours
-  const { data: camp } = await supabase.rpc('ma_campagne');
+  const { data: camp } = await sb.rpc('ma_campagne');
   CAMPAGNE = camp || null;
 
   // UI de base
@@ -1152,12 +1152,12 @@ async function loadDashboard() {
   if (!CAMPAGNE) return;
 
   // 1. Scores de la campagne
-  const { data: scores } = await supabase.from('scores_humaniscore')
+  const { data: scores } = await sb.from('scores_humaniscore')
     .select('*').eq('campagne_id', CAMPAGNE).order('calcule_le', { ascending:false }).limit(1);
   const s = scores && scores[0];
 
   // 2. Infos campagne + nombre de répondants
-  const { data: campInfo } = await supabase.from('campagnes').select('nom, periode, statut').eq('id', CAMPAGNE).single();
+  const { data: campInfo } = await sb.from('campagnes').select('nom, periode, statut').eq('id', CAMPAGNE).single();
 
   if (s) {
     animateScore('scoreAbs', Number(s.score_absenteisme || 0));
@@ -1174,7 +1174,7 @@ async function loadDashboard() {
   }
 
   // 3. Radar + détail des 14 dimensions (réels)
-  const { data: radar } = await supabase.rpc('radar_dimensions', { p_campagne: CAMPAGNE });
+  const { data: radar } = await sb.rpc('radar_dimensions', { p_campagne: CAMPAGNE });
   if (radar && radar.length) {
     const dims = radar.filter(d => d.score !== null);
     makeChart('radarChart', {
@@ -1249,10 +1249,10 @@ function renderDimensions(radar) {
 
 let EVOLUTION = null;
 async function loadEvolution() {
-  const { data: camps } = await supabase.from('campagnes')
+  const { data: camps } = await sb.from('campagnes')
     .select('id, nom, periode').eq('entreprise_id', PROFILE.entreprise_id).order('periode');
   if (!camps || !camps.length) return;
-  const { data: allScores } = await supabase.from('scores_humaniscore')
+  const { data: allScores } = await sb.from('scores_humaniscore')
     .select('campagne_id, score_absenteisme, score_turnover, score_productivite, humaniscore, calcule_le')
     .in('campagne_id', camps.map(c => c.id)).order('calcule_le', { ascending:false });
   const byCamp = {};
@@ -1330,22 +1330,22 @@ async function loadQuestionnaire(type) {
 
   // Modalités (libellés des échelles)
   if (!Object.keys(MODALITES).length) {
-    const { data: mods } = await supabase.from('modalites').select('*').order('valeur');
+    const { data: mods } = await sb.from('modalites').select('*').order('valeur');
     MODALITES = {};
     (mods || []).forEach(m => { (MODALITES[m.echelle] = MODALITES[m.echelle] || [])[m.valeur-1] = m.libelle; });
   }
 
   // Questionnaire + dimensions + items
-  const { data: q } = await supabase.from('questionnaires').select('id').eq('type', type).limit(1).single();
+  const { data: q } = await sb.from('questionnaires').select('id').eq('type', type).limit(1).single();
   if (!q) { content.innerHTML = '<div class="empty-state"><div class="empty-sub">Questionnaire indisponible.</div></div>'; return; }
-  const { data: dims } = await supabase.from('dimensions').select('id, code, axe, libelle, ordre').eq('questionnaire_id', q.id).order('ordre');
-  const { data: items } = await supabase.from('items').select('id, dimension_id, code, libelle, ordre, echelle').in('dimension_id', dims.map(d => d.id)).order('ordre');
+  const { data: dims } = await sb.from('dimensions').select('id, code, axe, libelle, ordre').eq('questionnaire_id', q.id).order('ordre');
+  const { data: items } = await sb.from('items').select('id, dimension_id, code, libelle, ordre, echelle').in('dimension_id', dims.map(d => d.id)).order('ordre');
   ITEMS = items || [];
 
   // Réponses déjà saisies (reprise)
   answers = {};
   if (CAMPAGNE) {
-    const { data: prev } = await supabase.from('reponses').select('item_id, valeur')
+    const { data: prev } = await sb.from('reponses').select('item_id, valeur')
       .eq('campagne_id', CAMPAGNE).eq('utilisateur_id', PROFILE.id);
     (prev || []).forEach(r => answers[r.item_id] = r.valeur);
   }
@@ -1409,13 +1409,13 @@ async function submitQuestionnaire() {
   const btn = event && event.target; if (btn) { btn.disabled = true; btn.textContent = 'Enregistrement...'; }
   try {
     // Remplacer les réponses existantes de cette campagne
-    await supabase.from('reponses').delete().eq('campagne_id', CAMPAGNE).eq('utilisateur_id', PROFILE.id);
+    await sb.from('reponses').delete().eq('campagne_id', CAMPAGNE).eq('utilisateur_id', PROFILE.id);
     const rows = Object.entries(answers).map(([item_id, valeur]) => ({
       campagne_id: CAMPAGNE, utilisateur_id: PROFILE.id, item_id, valeur }));
-    const { error: e1 } = await supabase.from('reponses').insert(rows);
+    const { error: e1 } = await sb.from('reponses').insert(rows);
     if (e1) throw e1;
     // Finalisation : calcule les scores par dimension et déclenche le recalcul du Humaniscore
-    const { error: e2 } = await supabase.rpc('finaliser_questionnaire', { p_campagne: CAMPAGNE });
+    const { error: e2 } = await sb.rpc('finaliser_questionnaire', { p_campagne: CAMPAGNE });
     if (e2) throw e2;
     alert('✨ Merci ! Vos réponses sont enregistrées et le Humaniscore a été recalculé.');
     if (PROFILE.role !== 'salarie') { await loadDashboard(); showScreen('dashboard', document.querySelector('.nav-item')); }
@@ -1455,7 +1455,7 @@ function renderInterventions() {
 
 async function refreshInterventionsDemandees() {
   if (!CAMPAGNE) return;
-  const { data } = await supabase.rpc('lister_interventions_demandees', { p_campagne: CAMPAGNE });
+  const { data } = await sb.rpc('lister_interventions_demandees', { p_campagne: CAMPAGNE });
   DEMANDES = data || [];
   renderInterventions();
 }
@@ -1464,7 +1464,7 @@ async function demanderIntervention(code, name) {
   if (!CAMPAGNE) { alert('Aucune campagne en cours.'); return; }
   if (PROFILE.role === 'salarie') return;
   if (!confirm(`Demander l'intervention « ${name} » à Humaniscore ?`)) return;
-  const { error } = await supabase.rpc('demander_intervention', { p_code: code, p_libelle: name, p_campagne: CAMPAGNE });
+  const { error } = await sb.rpc('demander_intervention', { p_code: code, p_libelle: name, p_campagne: CAMPAGNE });
   if (error) { alert('Erreur : ' + error.message); return; }
   await refreshInterventionsDemandees();
 }
@@ -1483,7 +1483,7 @@ async function demanderIntervention(code, name) {
   } else {
     // Reprise de session automatique
     const resume = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       if (session) await initApp();
     };
     if (document.readyState !== 'loading') resume();
