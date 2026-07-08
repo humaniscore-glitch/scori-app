@@ -735,6 +735,10 @@
     font-weight: 600; box-shadow: 0 0 0 3px rgba(47,109,179,.10); }
   .q-axe-title { letter-spacing: .02em; }
 
+  /* ── Radar : zone contrainte ── */
+  .hero-right { min-height: 340px; justify-content: center; }
+  #radarChart { max-width: 380px; max-height: 320px; }
+
   /* ── Accessibilité & finitions ── */
   :focus-visible { outline: 2px solid var(--primary-light); outline-offset: 2px; }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after {
@@ -1571,7 +1575,7 @@ function renderRadarAxisBtns() {
 // DASHBOARD
 // ════════════════════════════════════════════
 async function initDashboard() {
-  renderRadarChart([68, 62, 70, 55, 58, 65, 60]);
+  // Le radar ne s'affiche qu'avec des données réelles (voir chargement des scores)
   renderRadarAxisBtns();
 
   document.getElementById('scoreGlobal').textContent = '–';
@@ -1684,8 +1688,9 @@ function renderRadarChart(realData) {
   if (existing) existing.destroy();
 
   const labels = RADAR_AXES.map(a => a.label);
-  const startData = realData ? realData.map(() => 0) : BENCHMARK_SCORES.map(() => 0);
-  const targetData = realData || BENCHMARK_SCORES;
+  if (!realData) return;
+  const startData = realData.map(() => 0);
+  const targetData = realData;
 
   const chart = new Chart(document.getElementById('radarChart'), {
     type: 'radar',
@@ -1701,20 +1706,11 @@ function renderRadarChart(realData) {
           pointBackgroundColor: '#7EC8E3',
           pointRadius: 5,
         },
-        {
-          label: 'Benchmark secteur',
-          data: BENCHMARK_SCORES,
-          backgroundColor: 'transparent',
-          borderColor: 'rgba(245,166,35,0.6)',
-          borderWidth: 1.5,
-          borderDash: [6, 4],
-          pointBackgroundColor: 'rgba(245,166,35,0.6)',
-          pointRadius: 3,
-        }
+
       ]
     },
     options: {
-      responsive: true,
+      responsive: false,
       maintainAspectRatio: false,
       animation: { duration: 0 },
       scales: {
@@ -1727,7 +1723,7 @@ function renderRadarChart(realData) {
         }
       },
       plugins: {
-        legend: { position: 'bottom', labels: { usePointStyle: true, font: { size: 12 }, color: 'rgba(255,255,255,0.7)' } }
+        legend: { display: false }
       }
     }
   });
