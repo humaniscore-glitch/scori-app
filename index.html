@@ -986,6 +986,12 @@
   <a class="nav-item nav-admin nav-rapports-link" onclick="showScreen('rapports', this)">
     <span class="nav-icon"><svg class="ico"><use href="#i-file"/></svg></span> Rapports
   </a>
+  <a class="nav-item nav-admin-only" onclick="showScreen('entreprises', this)" style="display:none;">
+    <span class="nav-icon"><svg class="ico"><use href="#i-users"/></svg></span> Entreprises
+  </a>
+  <a class="nav-item nav-donnees-rh" onclick="showScreen('donnees-rh', this)">
+    <span class="nav-icon"><svg class="ico"><use href="#i-clipboard"/></svg></span> Données RH
+  </a>
 
   <div class="sidebar-footer">
     <div class="user-badge">
@@ -1088,6 +1094,8 @@
     </div>
 
     <!-- ── KPI DETAIL ── -->
+    <div class="screen" id="screen-entreprises"></div>
+    <div class="screen" id="screen-donnees-rh"></div>
     <div class="screen" id="screen-kpi-detail"></div>
 
     <!-- ── ROI ── -->
@@ -1557,6 +1565,12 @@ function applyRoleNavVisibility(role) {
   document.querySelectorAll('.nav-praticien').forEach(el => {
     el.style.display = isManagerOrAdmin ? '' : 'none';
   });
+  document.querySelectorAll('.nav-admin-only').forEach(el => {
+    el.style.display = role === 'admin_humaniscore' ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-donnees-rh').forEach(el => {
+    el.style.display = isManagerOrAdmin ? '' : 'none';
+  });
 }
 
 function doLogout() {
@@ -1582,11 +1596,14 @@ function showScreen(id, navEl) {
     navEl.classList.add('active');
   }
 
+  if (id === 'entreprises') renderEntreprisesAdmin();
+  if (id === 'donnees-rh') renderDonneesRH();
   const titles = {
     dashboard:'Dashboard', questionnaire:'Questionnaire',
     interventions:'Interventions', evolution:'Évolution',
     equipes:'Équipes', rapports:'Rapports',
     'kpi-detail': 'Détail KPI', roi: 'ROI & Impact financier',
+    entreprises: 'Entreprises clientes', 'donnees-rh': 'Données RH',
     effets: 'Effets des interventions', praticien: 'Interface Praticien'
   };
   document.getElementById('pageTitle').textContent = titles[id] || id;
@@ -1989,6 +2006,17 @@ async function chargerDetailsKPI(key, kpi, evoId) {
     }
   } catch(e) { /* silencieux */ }
 
+  if (key === 'turnover') {
+    const grid = document.querySelector('#screen-kpi-detail .kpi-detail-grid');
+    if (grid) {
+      const card = document.createElement('div');
+      card.className = 'chart-card';
+      card.innerHTML = '<div class="chart-title">Analyse des départs</div><div class="chart-sub">Motifs, âges et ancienneté — données déclarées dans Données RH</div><div id="kpiDepartsAnalyse" style="margin-top:10px;"></div>';
+      grid.appendChild(card);
+      rafraichirAnalyseDeparts('kpiDepartsAnalyse');
+    }
+  }
+
   try {
     const cont = document.getElementById('dimsInfl_' + key);
     if (cont) {
@@ -2091,7 +2119,8 @@ function renderROICharts() {
 // ════════════════════════════════════════════
 // QUESTIONNAIRE
 // ════════════════════════════════════════════
-function renderQuestionnaire(type) {
+async function renderQuestionnaire(type) {
+  await chargerInstrument(type);
   const questions = type === 'manager' ? QUESTIONS_MANAGER : QUESTIONS_SALARIE;
   const content = document.getElementById('questionnaireContent');
   if (!content) return;
@@ -2102,7 +2131,7 @@ function renderQuestionnaire(type) {
         <div class="q-item">
           <div class="q-text">${q.text}</div>
           <div class="q-options">
-            ${['Jamais','Rarement','Parfois','Toujours'].map((opt, i) => `
+            ${(MODALITES_ECHELLES[q.echelle] || ['Pas du tout d\'accord','Plutôt pas d\'accord','Plutôt d\'accord','Tout à fait d\'accord']).map((opt, i) => `
               <div class="q-opt" onclick="selectAnswer('${q.code}', ${i+1}, this)">${opt}</div>
             `).join('')}
           </div>
@@ -2112,7 +2141,7 @@ function renderQuestionnaire(type) {
   `).join('');
 }
 
-function renderSalarieQuestionnaire() {
+async function renderSalarieQuestionnaire() {
   const container = document.getElementById('salarieContent');
   if (!container) return;
   container.innerHTML = `
@@ -2128,6 +2157,7 @@ function renderSalarieQuestionnaire() {
     </div>`;
 
   const qcont = document.getElementById('salarieQContent');
+  await chargerInstrument('salarie');
   qcont.innerHTML = QUESTIONS_SALARIE.map(axe => `
     <div class="q-axe" style="border-color:${axe.color}">
       <div class="q-axe-title" style="color:${axe.color}">${axe.icon} ${axe.axe}</div>
@@ -2135,7 +2165,7 @@ function renderSalarieQuestionnaire() {
         <div class="q-item">
           <div class="q-text">${q.text}</div>
           <div class="q-options">
-            ${['Jamais','Rarement','Parfois','Toujours'].map((opt, i) => `
+            ${(MODALITES_ECHELLES[q.echelle] || ['Pas du tout d\'accord','Plutôt pas d\'accord','Plutôt d\'accord','Tout à fait d\'accord']).map((opt, i) => `
               <div class="q-opt" onclick="selectAnswer('${q.code}', ${i+1}, this)">${opt}</div>
             `).join('')}
           </div>
@@ -2150,7 +2180,7 @@ async function submitSalarieQuestionnaire() {
   if (answered === 0) { showToast('Veuillez répondre à au moins une question.', 'error'); return; }
 
   if (currentUser && currentUtilisateur) {
-    const dims = computeSalarieDims(answers);
+    const dims = computeDimsFromItems(answers);
     if (!activeCampagneId) {
       const { data: camp } = await _sb.from('campagnes')
         .select('id').eq('entreprise_id', currentUtilisateur.entreprise_id)
@@ -2220,13 +2250,13 @@ async function submitQuestionnaire() {
 
   let saveError = null;
   if (currentQuestionnaire === 'manager') {
-    const dims = computeManagerDims(answers);
+    const dims = computeDimsFromItems(answers);
     const { error } = await _sb.from('reponses_manager').insert({
       campagne_id: activeCampagneId, utilisateur_id: currentUtilisateur.id, ...dims, reponses_brutes: answers,
     });
     saveError = error;
   } else {
-    const dims = computeSalarieDims(answers);
+    const dims = computeDimsFromItems(answers);
     const { error } = await _sb.from('reponses_salarie').insert({
       campagne_id: activeCampagneId, utilisateur_id: currentUtilisateur.id,
       ser: dims.ser, src: dims.src, svp: dims.svp, ssp: dims.ssp, reponses_brutes: answers,
@@ -2915,6 +2945,308 @@ async function doResetPassword() {
   }, 2500);
 }
 
+
+
+// ════════════════════════════════════════════
+// CONSOLE ADMIN : ENTREPRISES CLIENTES
+// ════════════════════════════════════════════
+async function renderEntreprisesAdmin() {
+  const screen = document.getElementById('screen-entreprises');
+  screen.innerHTML = `
+    <div class="kpi-detail-grid" style="grid-template-columns: 1fr 380px;">
+      <div class="chart-card">
+        <div class="chart-title">Entreprises clientes</div>
+        <div class="chart-sub">Portefeuille Humaniscore</div>
+        <div id="listeEntreprises" style="margin-top:12px;font-size:13px;color:var(--text-sub);">Chargement…</div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Nouvelle entreprise</div>
+        <div class="chart-sub">Créer un compte client</div>
+        <div class="form-group" style="margin-top:12px;"><label class="form-label">Nom de l'entreprise</label>
+          <input class="form-input" id="neNom" placeholder="Ex. Clinique des Lilas"></div>
+        <div class="form-group"><label class="form-label">Secteur</label>
+          <input class="form-input" id="neSecteur" placeholder="Ex. Santé"></div>
+        <div class="form-group"><label class="form-label">Email du contact</label>
+          <input class="form-input" id="neEmail" type="email" placeholder="contact@entreprise.fr"></div>
+        <button class="btn btn-primary" style="width:100%;" onclick="creerEntreprise()">Créer l'entreprise</button>
+        <div id="neMsg" style="font-size:12.5px;margin-top:10px;"></div>
+      </div>
+    </div>`;
+  await rafraichirListeEntreprises();
+}
+
+async function rafraichirListeEntreprises() {
+  const cont = document.getElementById('listeEntreprises');
+  try {
+    const { data, error } = await _sb.rpc('admin_lister_entreprises');
+    if (error) throw error;
+    if (!data || !data.length) { cont.innerHTML = '<em>Aucune entreprise pour le moment.</em>'; return; }
+    cont.innerHTML = data.map(e => `
+      <div style="border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="flex:1;">
+            <div style="font-family:var(--font-display);font-weight:700;font-size:14.5px;color:var(--text-main);">${e.nom}</div>
+            <div style="font-size:12px;">${e.secteur || '—'} · ${e.contact_email || 'pas de contact'}</div>
+            <div style="font-size:12px;margin-top:3px;">Campagne : <strong>${e.campagne || 'aucune'}</strong></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button class="btn btn-primary" style="font-size:12px;padding:6px 12px;" onclick="creerCampagnePour('${e.id}', '${(e.nom || '').replace(/'/g, "\\'")}')">+ Campagne</button>
+            <button class="btn" style="font-size:12px;padding:6px 12px;border:1px solid var(--border);" onclick="creerManagerPour('${e.id}')">+ Manager</button>
+          </div>
+        </div>
+        <div id="adminMsg_${e.id}" style="font-size:12px;margin-top:8px;"></div>
+      </div>`).join('');
+  } catch(e) { cont.innerHTML = '<em>Erreur de chargement : ' + (e.message || e) + '</em>'; }
+}
+
+async function creerEntreprise() {
+  const nom = document.getElementById('neNom').value.trim();
+  const msg = document.getElementById('neMsg');
+  if (!nom) { msg.innerHTML = '<span style="color:var(--danger)">Le nom est requis.</span>'; return; }
+  try {
+    const { error } = await _sb.rpc('admin_creer_entreprise', {
+      p_nom: nom,
+      p_secteur: document.getElementById('neSecteur').value.trim() || null,
+      p_contact_nom: null,
+      p_contact_email: document.getElementById('neEmail').value.trim() || null });
+    if (error) throw error;
+    msg.innerHTML = '<span style="color:var(--success)">Entreprise créée.</span>';
+    ['neNom','neSecteur','neEmail'].forEach(id => document.getElementById(id).value = '');
+    await rafraichirListeEntreprises();
+  } catch(e) { msg.innerHTML = '<span style="color:var(--danger)">' + (e.message || e) + '</span>'; }
+}
+
+async function creerCampagnePour(entId, entNom) {
+  const nom = prompt('Nom de la campagne pour ' + entNom + ' :', 'Campagne T0');
+  if (!nom) return;
+  const msg = document.getElementById('adminMsg_' + entId);
+  try {
+    const { error } = await _sb.rpc('admin_creer_campagne', { p_entreprise: entId, p_nom: nom });
+    if (error) throw error;
+    msg.innerHTML = '<span style="color:var(--success)">Campagne « ' + nom + ' » créée et ouverte.</span>';
+    await rafraichirListeEntreprises();
+  } catch(e) { msg.innerHTML = '<span style="color:var(--danger)">' + (e.message || e) + '</span>'; }
+}
+
+async function creerManagerPour(entId) {
+  const email = prompt("Email du manager à inviter :");
+  if (!email) return;
+  const msg = document.getElementById('adminMsg_' + entId);
+  try {
+    const { data, error } = await _sb.rpc('admin_creer_manager', { p_entreprise: entId, p_email: email });
+    if (error) throw error;
+    const d = typeof data === 'string' ? JSON.parse(data) : data;
+    msg.innerHTML = '<span style="color:var(--success)">Manager autorisé.</span> ' +
+      (d && d.code ? 'Code d\'invitation : <strong style="font-family:var(--font-display)">' + d.code + '</strong> — ' : '') +
+      'Transmettez-lui le lien de l\'application' + (d && d.code ? ' et ce code' : '') +
+      ' : il créera son compte avec l\'email <strong>' + email + '</strong>.' +
+      (d && d.message ? '<br>' + d.message : '');
+  } catch(e) { msg.innerHTML = '<span style="color:var(--danger)">' + (e.message || e) + '</span>'; }
+}
+
+// ════════════════════════════════════════════
+// DONNÉES RH : SIRH PÉRIODIQUE + DÉPARTS
+// ════════════════════════════════════════════
+async function renderDonneesRH() {
+  const screen = document.getElementById('screen-donnees-rh');
+  screen.innerHTML = `
+    <div class="alert alert-warning" style="display:flex;">
+      Ces données restent au niveau collectif — aucune information nominative n'est demandée.
+    </div>
+    <div class="kpi-detail-grid" style="grid-template-columns: 1fr 1fr;">
+      <div class="chart-card">
+        <div class="chart-title">Données RH de la période</div>
+        <div class="chart-sub">Absentéisme et effectifs réels — la matière première de vos KPIs</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin-top:12px;">
+          <div class="form-group"><label class="form-label">Période</label>
+            <input class="form-input" id="srPeriode" placeholder="Ex. 2026-T3"></div>
+          <div class="form-group"><label class="form-label">Effectif moyen</label>
+            <input class="form-input" id="srEffectif" type="number" min="1" placeholder="45"></div>
+          <div class="form-group"><label class="form-label">Jours d'absence</label>
+            <input class="form-input" id="srAbsence" type="number" min="0" placeholder="120"></div>
+          <div class="form-group"><label class="form-label">Jours théoriques travaillés</label>
+            <input class="form-input" id="srTheoriques" type="number" min="1" placeholder="2900"></div>
+          <div class="form-group"><label class="form-label">Accidents du travail</label>
+            <input class="form-input" id="srAT" type="number" min="0" placeholder="0"></div>
+          <div class="form-group"><label class="form-label">Nombre de départs</label>
+            <input class="form-input" id="srDeparts" type="number" min="0" placeholder="2"></div>
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="enregistrerSIRH()">Enregistrer la période</button>
+        <div id="srMsg" style="font-size:12.5px;margin-top:10px;"></div>
+        <div id="srHistorique" style="margin-top:16px;font-size:12.5px;color:var(--text-sub);"></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Déclarer un départ</div>
+        <div class="chart-sub">Alimente l'analyse du turnover — 20 secondes, aucune donnée nominative</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 14px;margin-top:12px;">
+          <div class="form-group"><label class="form-label">Tranche d'âge</label>
+            <select class="form-input" id="dpAge"><option value="<25">&lt; 25 ans</option><option selected>25-34</option><option>35-44</option><option>45-54</option><option>55+</option></select></div>
+          <div class="form-group"><label class="form-label">Ancienneté (mois)</label>
+            <input class="form-input" id="dpAnc" type="number" min="0" placeholder="18"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Motif</label>
+          <select class="form-input" id="dpMotif">
+            <option value="demission">Démission</option>
+            <option value="rupture_conventionnelle">Rupture conventionnelle</option>
+            <option value="licenciement">Licenciement</option>
+            <option value="fin_periode_essai">Fin de période d'essai</option>
+            <option value="fin_cdd">Fin de CDD</option>
+            <option value="retraite">Retraite</option>
+            <option value="autre">Autre</option>
+          </select></div>
+        <button class="btn btn-primary" style="width:100%;" onclick="declarerDepart()">Déclarer ce départ</button>
+        <div id="dpMsg" style="font-size:12.5px;margin-top:10px;"></div>
+        <div id="dpAnalyse" style="margin-top:16px;"></div>
+      </div>
+    </div>`;
+  await Promise.all([rafraichirSIRH(), rafraichirAnalyseDeparts()]);
+}
+
+async function enregistrerSIRH() {
+  const msg = document.getElementById('srMsg');
+  const periode = document.getElementById('srPeriode').value.trim();
+  const abs = parseFloat(document.getElementById('srAbsence').value);
+  const theo = parseFloat(document.getElementById('srTheoriques').value);
+  if (!periode || isNaN(abs) || isNaN(theo)) {
+    msg.innerHTML = '<span style="color:var(--danger)">Période, jours d\'absence et jours théoriques sont requis.</span>'; return;
+  }
+  try {
+    const { error } = await _sb.rpc('saisir_donnees_sirh', {
+      p_periode: periode, p_jours_absence: abs, p_jours_theoriques: theo,
+      p_nb_at: parseInt(document.getElementById('srAT').value) || 0,
+      p_nb_departs: parseInt(document.getElementById('srDeparts').value) || 0,
+      p_effectif_moyen: parseFloat(document.getElementById('srEffectif').value) || null });
+    if (error) throw error;
+    const taux = Math.round(abs / theo * 1000) / 10;
+    msg.innerHTML = '<span style="color:var(--success)">Période enregistrée — taux d\'absentéisme réel : <strong>' + taux + '%</strong></span>';
+    await rafraichirSIRH();
+  } catch(e) { msg.innerHTML = '<span style="color:var(--danger)">' + (e.message || e) + '</span>'; }
+}
+
+async function rafraichirSIRH() {
+  const cont = document.getElementById('srHistorique');
+  try {
+    const { data } = await _sb.rpc('lister_donnees_sirh');
+    if (!data || !data.length) { cont.innerHTML = '<em>Aucune période enregistrée pour le moment.</em>'; return; }
+    cont.innerHTML = '<div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:6px;">Historique</div>' +
+      data.slice(0, 6).map(r => {
+        const taux = r.jours_theoriques > 0 ? Math.round(r.jours_absence / r.jours_theoriques * 1000) / 10 : null;
+        return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);">' +
+          '<span>' + r.periode + '</span><span>Abs. <strong>' + (taux != null ? taux + '%' : '–') + '</strong> · AT ' + (r.nb_at ?? 0) + ' · Départs ' + (r.nb_departs ?? 0) + '</span></div>';
+      }).join('');
+  } catch(e) { cont.innerHTML = ''; }
+}
+
+async function declarerDepart() {
+  const msg = document.getElementById('dpMsg');
+  const anc = parseInt(document.getElementById('dpAnc').value);
+  if (isNaN(anc)) { msg.innerHTML = '<span style="color:var(--danger)">L\'ancienneté est requise.</span>'; return; }
+  try {
+    const { error } = await _sb.rpc('saisir_depart', {
+      p_tranche_age: document.getElementById('dpAge').value,
+      p_anciennete_mois: anc,
+      p_motif: document.getElementById('dpMotif').value });
+    if (error) throw error;
+    msg.innerHTML = '<span style="color:var(--success)">Départ enregistré.</span>';
+    document.getElementById('dpAnc').value = '';
+    await rafraichirAnalyseDeparts();
+  } catch(e) { msg.innerHTML = '<span style="color:var(--danger)">' + (e.message || e) + '</span>'; }
+}
+
+const MOTIF_LABELS = { demission:'Démission', licenciement:'Licenciement', fin_periode_essai:'Fin de période d\'essai',
+  fin_cdd:'Fin de CDD', retraite:'Retraite', rupture_conventionnelle:'Rupture conventionnelle', autre:'Autre' };
+
+async function rafraichirAnalyseDeparts(cibleId) {
+  const cont = document.getElementById(cibleId || 'dpAnalyse');
+  if (!cont) return;
+  try {
+    const { data } = await _sb.rpc('analyser_departs');
+    const d = typeof data === 'string' ? JSON.parse(data) : data;
+    if (!d || !d.total) { cont.innerHTML = '<em style="font-size:12.5px;color:var(--text-sub);">L\'analyse s\'affichera dès le premier départ déclaré.</em>'; return; }
+    const ligne = (l, v) => '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12.5px;"><span>' + l + '</span><strong style="font-family:var(--font-display);">' + v + '</strong></div>';
+    let motifs = '';
+    if (d.par_motif) motifs = Object.entries(d.par_motif).sort((a,b) => b[1]-a[1])
+      .map(([m, n]) => ligne(MOTIF_LABELS[m] || m, n)).join('');
+    cont.innerHTML = '<div style="font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--primary);margin-bottom:6px;">Analyse des départs</div>' +
+      ligne('Total des départs', d.total) +
+      ligne('Ancienneté moyenne', Math.round(d.anciennete_moyenne_mois) + ' mois') +
+      ligne('Partis avant 2 ans', d.moins_2ans_pct + '%') + motifs;
+  } catch(e) { cont.innerHTML = ''; }
+}
+
+// ════════════════════════════════════════════
+// INSTRUMENT SCIENTIFIQUE : 62 items chargés depuis la base
+// ════════════════════════════════════════════
+const DIM_CODE_COL = { ENG_MESURE:'sme', ENG_MEO:'smi', COH_CLIMAT:'scs', COH_IMPACT:'si',
+  RPS_AUTONOMIE:'sa', RPS_EXIGENCE:'se', RPS_SOUTIEN:'ss', TMS_BIO:'sfb', TMS_SUIVI:'ssi',
+  TMS_ENV:'se2', SER:'ser', SRC:'src', SVP:'svp', SSP:'ssp' };
+let ITEM_META = {};        // code item → { poids, inverse, col }
+let MODALITES_ECHELLES = {}; // echelle → [4 libellés]
+let instrumentCharge = { manager: false, salarie: false };
+
+async function chargerInstrument(type) {
+  if (instrumentCharge[type]) return;
+  try {
+    if (!Object.keys(MODALITES_ECHELLES).length) {
+      const { data: mods } = await _sb.from('modalites').select('echelle, valeur, libelle').order('valeur');
+      (mods || []).forEach(m => { (MODALITES_ECHELLES[m.echelle] = MODALITES_ECHELLES[m.echelle] || [])[m.valeur - 1] = m.libelle; });
+    }
+    const { data: q } = await _sb.from('questionnaires').select('id').eq('type', type).limit(1).single();
+    if (!q) return;
+    const { data: dims } = await _sb.from('dimensions')
+      .select('id, code, axe, libelle, ordre').eq('questionnaire_id', q.id).order('ordre');
+    const { data: items } = await _sb.from('items')
+      .select('id, dimension_id, code, libelle, poids, inverse, ordre, echelle')
+      .in('dimension_id', (dims || []).map(d => d.id)).order('ordre');
+    const parDim = {};
+    (items || []).forEach(it => (parDim[it.dimension_id] = parDim[it.dimension_id] || []).push(it));
+
+    // Reconstruire la structure { axe, color, icon, questions } attendue par le rendu
+    const axeStyleMap = {};
+    (type === 'manager' ? QUESTIONS_MANAGER : QUESTIONS_SALARIE).forEach(a => axeStyleMap[a.axe] = a);
+    const couleursAxes = { 'Engagement direction':'#23486E', 'Cohésion & implication':'#2F6DB3',
+      'Risques psychosociaux':'#DE9B2D', 'Troubles musculosquelettiques':'#7C3AED',
+      'Engagement & Reconnaissance':'#2F9E77', 'Relations & Collectif':'#2F9E77',
+      'Vécu psychosocial':'#D9534F', 'Santé physique':'#2F9E77' };
+    const parAxe = [];
+    (dims || []).forEach(d => {
+      let grp = parAxe.find(g => g.axe === d.axe);
+      if (!grp) {
+        grp = { axe: d.axe, color: couleursAxes[d.axe] || '#23486E',
+          icon: '<svg class="ico"><use href="#i-target"/></svg>', questions: [] };
+        parAxe.push(grp);
+      }
+      (parDim[d.id] || []).forEach(it => {
+        grp.questions.push({ code: it.code, text: it.libelle, echelle: it.echelle });
+        ITEM_META[it.code] = { poids: Number(it.poids) || 1, inverse: !!it.inverse, col: DIM_CODE_COL[d.code] };
+      });
+    });
+    if (parAxe.length && parAxe.some(g => g.questions.length)) {
+      if (type === 'manager') { QUESTIONS_MANAGER.length = 0; QUESTIONS_MANAGER.push(...parAxe); }
+      else { QUESTIONS_SALARIE.length = 0; QUESTIONS_SALARIE.push(...parAxe); }
+      instrumentCharge[type] = true;
+    }
+  } catch(e) { /* en cas d'échec, les 10 questions de secours restent utilisées */ }
+}
+
+// Réplique exacte de score_dimension (SQL) : moyenne pondérée normalisée, items inversés
+function computeDimsFromItems(ans) {
+  const acc = {}; // col → { sv: Σ poids·val_eff, sp: Σ poids }
+  for (const [code, valeur] of Object.entries(ans)) {
+    const m = ITEM_META[code];
+    if (!m || !m.col) continue;
+    const val = m.inverse ? 5 - valeur : valeur;
+    (acc[m.col] = acc[m.col] || { sv: 0, sp: 0 });
+    acc[m.col].sv += m.poids * val;
+    acc[m.col].sp += m.poids;
+  }
+  const out = {};
+  for (const [col, a] of Object.entries(acc)) {
+    if (a.sp > 0) out[col] = Math.round((a.sv - a.sp) / (3 * a.sp) * 100 * 10) / 10 / 5; // /20, fidèle au SQL
+  }
+  return out;
+}
+
 // ════════════════════════════════════════════
 // FICHE DÉTAIL DIMENSION
 // ════════════════════════════════════════════
@@ -2954,7 +3286,7 @@ function closeDimModal() { document.getElementById('dimModal').style.display = '
 
 async function showDimensionDetail(code) {
   const meta = DIMENSIONS.find(d => d.code === code);
-  const det = DIM_DETAILS[code];
+  let det = DIM_DETAILS[code];
   if (!meta || !det) return;
   const modal = document.getElementById('dimModal');
   const box = document.getElementById('dimModalContent');
@@ -3012,6 +3344,11 @@ async function showDimensionDetail(code) {
   try {
     const camp = latestScores && latestScores.campagne_id;
     const table = det.src === 'manager' ? 'reponses_manager' : 'reponses_salarie';
+    // Questions issues de l'instrument complet si chargé, sinon codes historiques
+    await chargerInstrument(det.src);
+    const codesInstrument = Object.entries(ITEM_META)
+      .filter(([c, m]) => m.col === code.toLowerCase()).map(([c]) => c);
+    if (codesInstrument.length) det = Object.assign({}, det, { q: codesInstrument });
     let qHtml = '<em>Disponible dès les premières réponses de la campagne.</em>';
     if (camp) {
       const { data: rows } = await _sb.from(table).select('reponses_brutes').eq('campagne_id', camp);
