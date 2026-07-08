@@ -735,6 +735,29 @@
     font-weight: 600; box-shadow: 0 0 0 3px rgba(47,109,179,.10); }
   .q-axe-title { letter-spacing: .02em; }
 
+  /* ── Panneau latéral KPI : le narratif du constat à l'action ── */
+  #kpiPanel { position: fixed; top: 0; right: 0; bottom: 0; width: min(540px, 94vw);
+    background: #fff; z-index: 950; transform: translateX(102%);
+    transition: transform .38s cubic-bezier(.22,.8,.3,1);
+    box-shadow: -24px 0 70px -30px rgba(22,39,59,.45);
+    overflow-y: auto; padding: 26px 28px 40px; }
+  #kpiPanel.open { transform: none; }
+  .kn-header { display: flex; align-items: center; gap: 14px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border); position: sticky; top: -26px;
+    background: #fff; padding-top: 4px; z-index: 2; }
+  .kn-title { font-family: var(--font-display); font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+  .kn-source { font-size: 11.5px; color: var(--text-sub); margin-top: 2px; }
+  .kn-sec { padding: 18px 0 6px; border-bottom: 1px solid var(--border); }
+  .kn-sec:last-child { border-bottom: none; }
+  .kn-eyebrow { font-family: var(--font-display); font-size: 11px; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--primary);
+    display: flex; align-items: center; gap: 8px; }
+  .kn-num { color: var(--accent); }
+  .kn-question { font-size: 14.5px; font-weight: 600; color: var(--text-main); margin: 6px 0 10px; }
+  #kpiPanel .kpi-correlations { display: block; }
+  #kpiPanel .corr-card { margin-bottom: 8px; }
+  @media (prefers-reduced-motion: reduce) { #kpiPanel { transition: none; } }
+
   /* ── Connexion premium ── */
   .login-screen { background:
     linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
@@ -1891,57 +1914,58 @@ function showKPIPage(key) {
     : '<p style="font-size:13px;color:var(--text-sub);">Aucune action spécifique pour votre rôle.</p>';
 
   const evoId = `evoChart_${key}`;
+  const estDonneeRH = (key === 'absenteisme' || key === 'turnover');
+  const sourceBadge = estDonneeRH
+    ? 'Questionnaire + données RH déclarées'
+    : 'Mesuré par le questionnaire Scori';
+  const dateMesure = latestScores && latestScores.calcule_le
+    ? new Date(latestScores.calcule_le).toLocaleDateString('fr-FR') : null;
+  const nbRep = latestScores ? (latestScores.nb_repondants ?? ((latestScores.nb_managers ?? 0) + (latestScores.nb_salaries ?? 0))) : 0;
 
-  screen.innerHTML = `
-    <div style="margin-bottom:20px;">
-      <button class="btn btn-ghost" style="font-size:13px;" onclick="showScreen('dashboard', document.querySelector('.nav-item'))">
-        ← Retour
-      </button>
+  const sec = (num, titre, question, corps) => `
+    <div class="kn-sec">
+      <div class="kn-eyebrow"><span class="kn-num">${num}</span> ${titre}</div>
+      <div class="kn-question">${question}</div>
+      ${corps}
+    </div>`;
+
+  document.getElementById('kpiPanelContent').innerHTML = `
+    <div class="kn-header">
+      <div class="kpi-hero-icon" style="background:${kpi.color}15;color:${kpi.color};">${kpi.icon}</div>
+      <div style="flex:1;">
+        <div class="kn-title">${kpi.title}</div>
+        <div class="kn-source">${sourceBadge}${dateMesure ? ' · mesure du ' + dateMesure : ''}</div>
+      </div>
+      <button class="dim-modal-close" style="position:static;" onclick="closeKpiPanel()" aria-label="Fermer">&times;</button>
     </div>
 
-    <div class="kpi-hero-band" style="background:linear-gradient(135deg, ${kpi.color}15, ${kpi.color}08);border-color:${kpi.color}30;">
-      <div class="kpi-hero-icon">${kpi.icon}</div>
-      <div class="kpi-hero-info">
-        <div class="kpi-hero-title">${kpi.title}</div>
-        <div class="kpi-hero-score" style="color:${kpi.color}">${displayScore}<span style="font-size:24px;font-weight:400;">${kpi.unit}</span></div>
-        <div class="kpi-hero-meta">
-          <div class="risk-badge ${getRiskClass(scoreVal, kpi)}">${getRiskLabel(scoreVal, kpi)}</div>
-          ${vsSecteurl}
-          ${deltaN1 != null ? `<span class="delta ${deltaClass}">${deltaSign}${Math.abs(deltaN1)} pts vs N-1</span>` : ''}
-        </div>
+    ${sec('01', 'Constat', 'Où en êtes-vous aujourd\'hui ?', `
+      <div style="display:flex;align-items:baseline;gap:12px;margin:4px 0 8px;">
+        <span style="font-family:var(--font-display);font-size:44px;font-weight:700;color:${kpi.color};letter-spacing:-0.02em;">${displayScore}</span>
+        <span style="font-size:16px;color:var(--text-sub);">${kpi.unit}</span>
+        <span class="risk-badge ${getRiskClass(scoreVal, kpi)}" style="margin-left:auto;">${getRiskLabel(scoreVal, kpi)}</span>
       </div>
-    </div>
+      <div style="font-size:12px;color:var(--text-sub);">${nbRep ? nbRep + ' répondant(s) sur la campagne en cours' : 'En attente des premières réponses'}</div>
+      <div class="kpi-dept-bars" id="deptBars_${key}" style="margin-top:12px;">${deptHTML}</div>`)}
 
-    <div class="kpi-detail-grid">
-      <div class="chart-card">
-        <div class="chart-title">Évolution par campagne</div>
-        <div class="chart-sub">Mesures réelles T0 → Tn</div>
-        <div class="chart-container"><canvas id="${evoId}"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Répartition par équipe</div>
-        <div class="chart-sub">Comparatif interne</div>
-        <div class="kpi-dept-bars" id="deptBars_${key}">${deptHTML}</div>
-      </div>
-    </div>
+    ${sec('02', 'Tendance', 'Comment cet indicateur évolue-t-il ?', `
+      <div class="chart-container" style="height:250px;"><canvas id="${evoId}"></canvas></div>`)}
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
-      <div class="chart-card">
-        <div class="chart-title">Impact sur d'autres indicateurs</div>
-        <div class="chart-sub">Relations documentées dans la littérature</div>
-        <div class="kpi-dims-influentes" id="dimsInfl_${key}"></div>
-        <div style="height:10px"></div>
-        <div class="kpi-correlations">${corrHTML}</div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Actions recommandées</div>
-        <div class="chart-sub">Adaptées à votre rôle</div>
-        <div class="kpi-actions">${actionsHTML}</div>
-      </div>
-    </div>
+    ${sec('03', 'Facteurs explicatifs', 'Qu\'est-ce qui explique ce niveau ?', `
+      <div style="font-size:12px;color:var(--text-sub);margin-bottom:4px;">Les dimensions qui pèsent le plus sur cet indicateur, selon la revue de littérature Humaniscore. Cliquez pour explorer.</div>
+      <div class="kpi-dims-influentes" id="dimsInfl_${key}"></div>
+      <div id="kpiDepartsAnalyse" style="margin-top:12px;"></div>`)}
+
+    ${sec('04', 'Impacts documentés', 'Sur quoi cet indicateur retentit-il ?', `
+      <div class="kpi-correlations">${corrHTML}</div>`)}
+
+    ${sec('05', 'Passer à l\'action', 'Que faire maintenant ?', `
+      <div class="kpi-actions">${actionsHTML}</div>
+      <button class="btn btn-primary" style="width:100%;margin-top:14px;"
+        onclick="closeKpiPanel();document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.includes('Interventions'))n.click();})">
+        Voir les interventions Humaniscore</button>`)}
   `;
-
-  showScreen('kpi-detail', null);
+  openKpiPanel();
 
   chargerDetailsKPI(key, kpi, evoId);
 }
@@ -2006,16 +2030,8 @@ async function chargerDetailsKPI(key, kpi, evoId) {
     }
   } catch(e) { /* silencieux */ }
 
-  if (key === 'turnover') {
-    const grid = document.querySelector('#screen-kpi-detail .kpi-detail-grid');
-    if (grid) {
-      const card = document.createElement('div');
-      card.className = 'chart-card';
-      card.innerHTML = '<div class="chart-title">Analyse des départs</div><div class="chart-sub">Motifs, âges et ancienneté — données déclarées dans Données RH</div><div id="kpiDepartsAnalyse" style="margin-top:10px;"></div>';
-      grid.appendChild(card);
-      rafraichirAnalyseDeparts('kpiDepartsAnalyse');
-    }
-  }
+  if (key === 'turnover') rafraichirAnalyseDeparts('kpiDepartsAnalyse');
+  else { const el = document.getElementById('kpiDepartsAnalyse'); if (el) el.innerHTML = ''; }
 
   try {
     const cont = document.getElementById('dimsInfl_' + key);
@@ -2599,6 +2615,12 @@ function genererDUERP() {
 
 </div><!-- /page -->
 
+<!-- ── PANNEAU LATÉRAL KPI ── -->
+<div id="kpiPanelBackdrop" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(22,39,59,.35);backdrop-filter:blur(2px);" onclick="closeKpiPanel()"></div>
+<aside id="kpiPanel" role="dialog" aria-modal="true">
+  <div id="kpiPanelContent"></div>
+</aside>
+
 <!-- ── FICHE DÉTAIL DIMENSION ── -->
 <div id="dimModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(22,39,59,.55);backdrop-filter:blur(3px);" onclick="if(event.target===this)closeDimModal()">
   <div class="dim-modal-card" role="dialog" aria-modal="true">
@@ -2946,6 +2968,23 @@ async function doResetPassword() {
 }
 
 
+
+// ════════════════════════════════════════════
+// PANNEAU LATÉRAL KPI
+// ════════════════════════════════════════════
+function openKpiPanel() {
+  document.getElementById('kpiPanelBackdrop').style.display = 'block';
+  const p = document.getElementById('kpiPanel');
+  p.classList.add('open');
+  p.scrollTop = 0;
+}
+function closeKpiPanel() {
+  document.getElementById('kpiPanelBackdrop').style.display = 'none';
+  document.getElementById('kpiPanel').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeKpiPanel(); if (typeof closeDimModal === 'function') closeDimModal(); }
+});
 
 // ════════════════════════════════════════════
 // CONSOLE ADMIN : ENTREPRISES CLIENTES
