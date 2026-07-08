@@ -1583,11 +1583,23 @@ async function initDashboard() {
     const { data: { session } } = await _sb.auth.getSession();
     if (!session) return;
 
-    let query = _sb.from('scores_humaniscore').select('*').order('created_at', { ascending: false }).limit(1);
+    // Le score est rattaché à la campagne (pas directement à l'entreprise),
+    // et la colonne de date s'appelle calcule_le.
+    let scoresRow = null;
     if (currentUtilisateur?.entreprise_id) {
-      query = query.eq('entreprise_id', currentUtilisateur.entreprise_id);
+      const { data: camps } = await _sb.from('campagnes')
+        .select('id').eq('entreprise_id', currentUtilisateur.entreprise_id);
+      const ids = (camps || []).map(c => c.id);
+      if (ids.length) {
+        const { data } = await _sb.from('scores_humaniscore').select('*')
+          .in('campagne_id', ids).order('calcule_le', { ascending: false }).limit(1);
+        scoresRow = data && data[0];
+      }
+    } else {
+      const { data } = await _sb.from('scores_humaniscore').select('*')
+        .order('calcule_le', { ascending: false }).limit(1);
+      scoresRow = data && data[0];
     }
-    const { data: scoresRow } = await query.single();
 
     if (scoresRow) {
       latestScores = scoresRow;
