@@ -983,9 +983,6 @@
   <a class="nav-item active" onclick="showScreen('dashboard', this)">
     <span class="nav-icon"><svg class="ico"><use href="#i-chart"/></svg></span> Dashboard
   </a>
-  <a class="nav-item nav-questionnaire" onclick="showScreen('questionnaire', this)">
-    <span class="nav-icon"><svg class="ico"><use href="#i-clipboard"/></svg></span> Questionnaire
-  </a>
   <a class="nav-item nav-admin" onclick="showScreen('roi', this)">
     <span class="nav-icon"><svg class="ico"><use href="#i-trend"/></svg></span> ROI
   </a>
@@ -1037,7 +1034,7 @@
   <div class="topbar">
     <div class="page-title" id="pageTitle">Dashboard</div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost nav-questionnaire" onclick="showScreen('questionnaire', null)"><svg class="ico"><use href="#i-clipboard"/></svg> Questionnaire</button>
+      
       <button class="btn btn-primary" onclick="exportRapport()"> Exporter</button>
     </div>
   </div>
@@ -1574,6 +1571,7 @@ function enterApp(email, user, role) {
       renderInterventions();
       renderRadarAxisBtns();
       applyRoleNavVisibility(role);
+      routerPointDeDepart(role);
     }
   }, 400);
 }
@@ -2247,7 +2245,7 @@ async function submitQuestionnaire() {
 
   if (!currentUser) {
     showToast(`<svg class="ico"><use href="#i-zap"/></svg> ${answered} réponses envoyées !`, 'success', 4000);
-    showScreen('dashboard', document.querySelector('.nav-item'));
+    initDashboard(); showScreen('dashboard', document.querySelector('.nav-item'));
     return;
   }
 
@@ -2292,7 +2290,7 @@ async function submitQuestionnaire() {
   }
 
   showToast(`<svg class="ico"><use href="#i-zap"/></svg> ${answered} réponses enregistrées !`, 'success', 4000);
-  showScreen('dashboard', document.querySelector('.nav-item'));
+  initDashboard(); showScreen('dashboard', document.querySelector('.nav-item'));
 }
 
 function saveDraft() {
@@ -2614,20 +2612,6 @@ function genererDUERP() {
   </div><!-- /page-break -->
 
 </div><!-- /page -->
-
-<!-- ── PANNEAU LATÉRAL KPI ── -->
-<div id="kpiPanelBackdrop" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(22,39,59,.35);backdrop-filter:blur(2px);" onclick="closeKpiPanel()"></div>
-<aside id="kpiPanel" role="dialog" aria-modal="true">
-  <div id="kpiPanelContent"></div>
-</aside>
-
-<!-- ── FICHE DÉTAIL DIMENSION ── -->
-<div id="dimModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(22,39,59,.55);backdrop-filter:blur(3px);" onclick="if(event.target===this)closeDimModal()">
-  <div class="dim-modal-card" role="dialog" aria-modal="true">
-    <button class="dim-modal-close" onclick="closeDimModal()" aria-label="Fermer">&times;</button>
-    <div id="dimModalContent"></div>
-  </div>
-</div>
 
 </body>
 </html>`;
@@ -2968,6 +2952,35 @@ async function doResetPassword() {
 }
 
 
+
+// ════════════════════════════════════════════
+// POINT DE DÉPART : le questionnaire n'est pas un onglet,
+// c'est l'étape d'entrée tant qu'il n'a pas été rempli.
+// ════════════════════════════════════════════
+async function routerPointDeDepart(role) {
+  if (role === 'admin_humaniscore') return; // l'admin arrive sur son portefeuille, pas sur un questionnaire
+  try {
+    if (!activeCampagneId && currentUtilisateur?.entreprise_id) {
+      const { data: camp } = await _sb.from('campagnes')
+        .select('id').eq('entreprise_id', currentUtilisateur.entreprise_id)
+        .eq('statut', 'en_cours').order('created_at', { ascending: false }).limit(1).single();
+      activeCampagneId = camp?.id ?? null;
+    }
+    if (!activeCampagneId) return; // pas de campagne : dashboard
+    const { data } = await _sb.from('reponses_manager')
+      .select('id').eq('campagne_id', activeCampagneId)
+      .eq('utilisateur_id', currentUtilisateur.id).limit(1);
+    if (!data || !data.length) {
+      // Pas encore répondu : le questionnaire est le point de départ
+      showScreen('questionnaire', null);
+      const qh = document.querySelector('#screen-questionnaire .q-header');
+      if (qh && !document.getElementById('bandeauDepart')) {
+        qh.insertAdjacentHTML('afterbegin', `<div id="bandeauDepart" class="alert alert-warning" style="display:flex;margin-bottom:16px;">
+          Bienvenue ! Votre diagnostic commence ici : une dizaine de minutes, une seule fois par campagne. Votre dashboard se déverrouille juste après.</div>`);
+      }
+    }
+  } catch(e) { /* en cas de doute : dashboard */ }
+}
 
 // ════════════════════════════════════════════
 // PANNEAU LATÉRAL KPI
@@ -3438,5 +3451,18 @@ async function showDimensionDetail(code) {
 }
 
 </script>
+<!-- ── PANNEAU LATÉRAL KPI ── -->
+<div id="kpiPanelBackdrop" style="display:none;position:fixed;inset:0;z-index:900;background:rgba(22,39,59,.35);backdrop-filter:blur(2px);" onclick="closeKpiPanel()"></div>
+<aside id="kpiPanel" role="dialog" aria-modal="true">
+  <div id="kpiPanelContent"></div>
+</aside>
+
+<!-- ── FICHE DÉTAIL DIMENSION ── -->
+<div id="dimModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(22,39,59,.55);backdrop-filter:blur(3px);" onclick="if(event.target===this)closeDimModal()">
+  <div class="dim-modal-card" role="dialog" aria-modal="true">
+    <button class="dim-modal-close" onclick="closeDimModal()" aria-label="Fermer">&times;</button>
+    <div id="dimModalContent"></div>
+  </div>
+</div>
 </body>
 </html>
