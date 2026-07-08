@@ -1748,12 +1748,22 @@ function renderRadarChart(realData) {
 async function renderDimensions() {
   const grid = document.getElementById('dimGrid');
   if (!grid) return;
-  // Scores réels par dimension (échelle 0-100 → /20)
+  // Scores réels par dimension : mêmes sources que le calcul du Humaniscore
+  // (moyennes des réponses finalisées, échelle /20)
   let reels = {};
   try {
     if (latestScores && latestScores.campagne_id) {
-      const { data } = await _sb.rpc('radar_dimensions', { p_campagne: latestScores.campagne_id });
-      (data || []).forEach(r => { if (r.score != null) reels[r.code] = Math.round(r.score / 5 * 10) / 10; });
+      const camp = latestScores.campagne_id;
+      const moy = (rows, cle) => {
+        const v = (rows || []).map(r => r[cle]).filter(x => x != null);
+        return v.length ? Math.round(v.reduce((a,b) => a + Number(b), 0) / v.length * 10) / 10 : null;
+      };
+      const { data: rm } = await _sb.from('reponses_manager')
+        .select('sme,smi,scs,si,sa,se,ss,sfb,ssi,se2').eq('campagne_id', camp);
+      const { data: rs } = await _sb.from('reponses_salarie')
+        .select('ser,src,svp,ssp').eq('campagne_id', camp);
+      ['sme','smi','scs','si','sa','se','ss','sfb','ssi','se2'].forEach(c => reels[c.toUpperCase()] = moy(rm, c));
+      ['ser','src','svp','ssp'].forEach(c => reels[c.toUpperCase()] = moy(rs, c));
     }
   } catch(e) { /* silencieux */ }
   grid.innerHTML = DIMENSIONS.map(dm => {
