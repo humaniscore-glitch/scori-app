@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Scori by HumaniScore</title>
+<title>Scori by HumaniScore · moteur prédictif</title>
 <link rel="icon" href="logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -735,6 +735,28 @@
     font-weight: 600; box-shadow: 0 0 0 3px rgba(47,109,179,.10); }
   .q-axe-title { letter-spacing: .02em; }
 
+  /* ── Icônes vectorielles ── */
+  .ico { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7;
+    stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; }
+  .nav-icon .ico { width: 17px; height: 17px; }
+  .dim-icon .ico, .intervention-icon .ico, .kpi-hero-icon .ico { width: 22px; height: 22px; stroke-width: 1.6; }
+  .risk-badge::before { content:''; display:inline-block; width:7px; height:7px;
+    border-radius:99px; margin-right:7px; background: currentColor; vertical-align: 1px; }
+
+  /* ── Fiche détail dimension ── */
+  .dim-modal-card { position: relative; max-width: 640px; margin: 6vh auto; max-height: 86vh;
+    overflow-y: auto; background: #fff; border-radius: 20px; padding: 28px 30px;
+    box-shadow: 0 24px 80px -20px rgba(22,39,59,.45); animation: dimIn .25s ease; }
+  @keyframes dimIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .dim-modal-close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
+    border-radius: 99px; border: 1px solid var(--border); background: #fff; cursor: pointer;
+    font-size: 13px; color: var(--text-sub); }
+  .dim-modal-close:hover { background: #F2F5F9; color: var(--text-main); }
+  .dim-detail-section { border-top: 1px solid var(--border); padding: 16px 0 6px; margin-top: 6px; }
+  .dim-detail-title { font-family: var(--font-display); font-size: 13px; font-weight: 700;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--primary); margin-bottom: 8px; }
+  .dim-card:hover { transform: translateY(-1px); }
+
   /* ── Radar : zone contrainte ── */
   .hero-right { min-height: 340px; justify-content: center; }
   #radarChart { max-width: 380px; max-height: 320px; }
@@ -747,6 +769,28 @@
 </style>
 </head>
 <body>
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+<symbol id="i-chart" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></symbol>
+<symbol id="i-trend" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></symbol>
+<symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></symbol>
+<symbol id="i-activity" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></symbol>
+<symbol id="i-zap" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></symbol>
+<symbol id="i-stetho" viewBox="0 0 24 24"><path d="M5 3v6a5 5 0 0 0 10 0V3"/><path d="M10 14v2a5 5 0 0 0 5 5 4 4 0 0 0 4-4v-2"/><circle cx="19" cy="13" r="2"/></symbol>
+<symbol id="i-users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+<symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+<symbol id="i-logout" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></symbol>
+<symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+<symbol id="i-sliders" viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></symbol>
+<symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.4 1 2.3h6c0-.9.4-1.8 1-2.3A7 7 0 0 0 12 2z"/></symbol>
+<symbol id="i-unlock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+<symbol id="i-message" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></symbol>
+<symbol id="i-star" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></symbol>
+<symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></symbol>
+<symbol id="i-feather" viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></symbol>
+<symbol id="i-focus" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></symbol>
+</svg>
 
 <!-- Toast container -->
 <div class="toast-container" id="toastContainer"></div>
@@ -757,7 +801,7 @@
 <div class="feedback-modal-overlay" id="feedbackModal" style="display:none;">
   <div class="feedback-modal-box">
     <div style="text-align:center;margin-bottom:24px;">
-      <div style="font-size:44px;margin-bottom:10px;">💆</div>
+      <div style="font-size:44px;margin-bottom:10px;"><svg class="ico"><use href="#i-heart"/></svg></div>
       <h3 style="font-size:19px;font-weight:800;color:var(--text-main);">Comment s'est passée la séance ?</h3>
       <p style="font-size:12px;color:var(--text-sub);margin-top:4px;">30 secondes · vos données sont anonymisées</p>
     </div>
@@ -802,7 +846,7 @@
 
     <div style="display:flex;gap:12px;">
       <button class="btn btn-ghost" style="flex:1;" onclick="closeFeedbackModal()">Passer</button>
-      <button class="btn btn-primary" style="flex:1;" onclick="submitFeedback()">Envoyer mon ressenti ✓</button>
+      <button class="btn btn-primary" style="flex:1;" onclick="submitFeedback()">Envoyer mon ressenti </button>
     </div>
   </div>
 </div>
@@ -813,7 +857,7 @@
 <div class="login-screen" id="resetScreen" style="display:none;">
   <div class="login-card">
     <div style="text-align:center;margin-bottom:20px;">
-      <div style="font-size:52px;margin-bottom:12px;">🔐</div>
+      <div style="font-size:52px;margin-bottom:12px;"></div>
       <div class="login-title">Nouveau mot de passe</div>
       <div class="login-sub">Scori by HumaniScore</div>
     </div>
@@ -889,33 +933,33 @@
   <div class="nav-section">Navigation</div>
 
   <a class="nav-item active" onclick="showScreen('dashboard', this)">
-    <span class="nav-icon">📊</span> Dashboard
+    <span class="nav-icon"><svg class="ico"><use href="#i-chart"/></svg></span> Dashboard
   </a>
   <a class="nav-item nav-questionnaire" onclick="showScreen('questionnaire', this)">
-    <span class="nav-icon">📋</span> Questionnaire
+    <span class="nav-icon"><svg class="ico"><use href="#i-clipboard"/></svg></span> Questionnaire
   </a>
   <a class="nav-item nav-admin" onclick="showScreen('roi', this)">
-    <span class="nav-icon">💰</span> ROI
+    <span class="nav-icon"><svg class="ico"><use href="#i-trend"/></svg></span> ROI
   </a>
   <a class="nav-item nav-interventions" onclick="showScreen('interventions', this)">
-    <span class="nav-icon">💆</span> Interventions
+    <span class="nav-icon"><svg class="ico"><use href="#i-heart"/></svg></span> Interventions
   </a>
   <a class="nav-item" onclick="showScreen('evolution', this)">
-    <span class="nav-icon">📈</span> Évolution
+    <span class="nav-icon"><svg class="ico"><use href="#i-activity"/></svg></span> Évolution
   </a>
   <a class="nav-item nav-effets" onclick="showScreen('effets', this)">
-    <span class="nav-icon">✨</span> Effets séances
+    <span class="nav-icon"><svg class="ico"><use href="#i-zap"/></svg></span> Effets séances
   </a>
   <a class="nav-item nav-praticien" onclick="showScreen('praticien', this)">
-    <span class="nav-icon">🩺</span> Praticien
+    <span class="nav-icon"><svg class="ico"><use href="#i-stetho"/></svg></span> Praticien
   </a>
 
   <div class="nav-section nav-admin">Admin</div>
   <a class="nav-item nav-admin nav-equipes-link" onclick="showScreen('equipes', this)">
-    <span class="nav-icon">👥</span> Équipes
+    <span class="nav-icon"><svg class="ico"><use href="#i-users"/></svg></span> Équipes
   </a>
   <a class="nav-item nav-admin nav-rapports-link" onclick="showScreen('rapports', this)">
-    <span class="nav-icon">📄</span> Rapports
+    <span class="nav-icon"><svg class="ico"><use href="#i-file"/></svg></span> Rapports
   </a>
 
   <div class="sidebar-footer">
@@ -926,7 +970,7 @@
         <div class="user-role" id="userRole"></div>
       </div>
     </div>
-    <button class="btn-logout" onclick="doLogout()">🚪 Déconnexion</button>
+    <button class="btn-logout" onclick="doLogout()"><svg class="ico"><use href="#i-logout"/></svg> Déconnexion</button>
   </div>
 </nav>
 
@@ -939,8 +983,8 @@
   <div class="topbar">
     <div class="page-title" id="pageTitle">Dashboard</div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost nav-questionnaire" onclick="showScreen('questionnaire', null)">📋 Questionnaire</button>
-      <button class="btn btn-primary" onclick="exportRapport()">⬇ Exporter</button>
+      <button class="btn btn-ghost nav-questionnaire" onclick="showScreen('questionnaire', null)"><svg class="ico"><use href="#i-clipboard"/></svg> Questionnaire</button>
+      <button class="btn btn-primary" onclick="exportRapport()"> Exporter</button>
     </div>
   </div>
 
@@ -951,7 +995,7 @@
     <div class="screen active" id="screen-dashboard">
 
       <div id="alertBanner">
-        ⚠️ <strong>Campagne en cours</strong> — Données préliminaires
+         <strong>Campagne en cours</strong> — Données préliminaires
       </div>
 
       <div class="empty-data-banner" id="emptyDataBanner" style="display:none;">
@@ -961,7 +1005,7 @@
           <div class="empty-data-sub">Les scores s'afficheront dès que des questionnaires auront été soumis</div>
         </div>
         <button class="btn btn-primary" onclick="showScreen('questionnaire', null)" style="flex-shrink:0;">
-          📋 Remplir le questionnaire
+          <svg class="ico"><use href="#i-clipboard"/></svg> Remplir le questionnaire
         </button>
       </div>
 
@@ -973,7 +1017,7 @@
             <span id="scoreGlobal">–</span>
             <span class="hero-score-unit">/100</span>
           </div>
-          <div class="risk-badge risk-orange" id="badgeGlobal">⚠️ À surveiller</div>
+          <div class="risk-badge risk-orange" id="badgeGlobal"> À surveiller</div>
           <div id="deltaGlobal" style="font-size:13px;color:#7EC8E3;margin-top:8px;display:none;"></div>
           <div id="participantsCount" style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;"></div>
         </div>
@@ -1095,13 +1139,13 @@
           <p style="font-size:13px;color:var(--text-sub);">Vos réponses sont confidentielles · Durée estimée : 8 minutes</p>
         </div>
         <div class="q-role-tabs">
-          <button class="q-tab active" onclick="switchQuestionnaire('manager', this)">👔 Version Manager</button>
-          <button class="q-tab" onclick="switchQuestionnaire('salarie', this)">👤 Version Salarié</button>
+          <button class="q-tab active" onclick="switchQuestionnaire('manager', this)"> Version Manager</button>
+          <button class="q-tab" onclick="switchQuestionnaire('salarie', this)"> Version Salarié</button>
         </div>
         <div id="questionnaireContent"></div>
         <div style="margin-top:28px;display:flex;justify-content:flex-end;gap:12px;">
           <button class="btn btn-ghost" onclick="saveDraft()">Sauvegarder brouillon</button>
-          <button class="btn btn-primary" onclick="submitQuestionnaire()">Soumettre et calculer mon score ✨</button>
+          <button class="btn btn-primary" onclick="submitQuestionnaire()">Soumettre et calculer mon score <svg class="ico"><use href="#i-zap"/></svg></button>
         </div>
       </div>
     </div>
@@ -1123,7 +1167,7 @@
     <!-- ── ÉVOLUTION ── -->
     <div class="screen" id="screen-evolution">
       <div style="background:#F0FDF4;border-left:4px solid #10B981;border-radius:8px;padding:12px 16px;font-size:13px;color:#065F46;display:flex;align-items:center;gap:10px;margin-bottom:20px;">
-        ✅ <strong>Progression +8.4 points</strong> depuis le début de la démarche
+         <strong>Progression +8.4 points</strong> depuis le début de la démarche
       </div>
       <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;margin-bottom:24px;">
         <div class="chart-card">
@@ -1142,7 +1186,7 @@
     <!-- ── ÉQUIPES ── -->
     <div class="screen" id="screen-equipes">
       <div class="empty-state">
-        <div class="empty-icon">👥</div>
+        <div class="empty-icon"><svg class="ico"><use href="#i-users"/></svg></div>
         <div class="empty-title">Gestion des équipes</div>
         <div class="empty-sub">Connectez Scori à votre base Supabase pour gérer vos équipes</div>
         <button class="btn btn-primary" style="margin:20px auto;display:flex;">+ Ajouter une équipe</button>
@@ -1158,13 +1202,13 @@
       </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px;">
         <div class="chart-card" style="cursor:pointer;" onclick="genererDUERP()">
-          <div style="font-size:36px;margin-bottom:12px;">📄</div>
+          <div style="font-size:36px;margin-bottom:12px;"><svg class="ico"><use href="#i-file"/></svg></div>
           <div style="font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:6px;">Rapport DUERP</div>
           <div style="font-size:13px;color:var(--text-sub);margin-bottom:16px;">Document Unique d'Évaluation des Risques Professionnels · Format A4 imprimable</div>
           <button class="btn btn-primary" style="width:100%;">Générer la DUERP →</button>
         </div>
         <div class="chart-card" style="opacity:.5;">
-          <div style="font-size:36px;margin-bottom:12px;">📊</div>
+          <div style="font-size:36px;margin-bottom:12px;"><svg class="ico"><use href="#i-chart"/></svg></div>
           <div style="font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:6px;">Synthèse DRH</div>
           <div style="font-size:13px;color:var(--text-sub);margin-bottom:16px;">Tableau de bord exécutif pour la direction RH</div>
           <button class="btn btn-ghost" style="width:100%;" disabled>Bientôt disponible</button>
@@ -1208,7 +1252,7 @@ const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 // ════════════════════════════════════════════
 const KPI_PAGES = {
   rps: {
-    title: 'Risque Psychosocial', icon: '⚡', color: '#F59E0B',
+    title: 'Risque Psychosocial', icon: '<svg class="ico"><use href="#i-zap"/></svg>', color: '#F59E0B',
     scoreKey: 'score_rps', unit: '/100', benchmark: 68,
     depts: [
       { name: 'Production', val: 42 }, { name: 'Commercial', val: 58 },
@@ -1226,7 +1270,7 @@ const KPI_PAGES = {
     }
   },
   tms: {
-    title: 'Troubles Musculosquelettiques', icon: '🦴', color: '#7C3AED',
+    title: 'Troubles Musculosquelettiques', icon: '<svg class="ico"><use href="#i-focus"/></svg>', color: '#7C3AED',
     scoreKey: 'prevalence_tms', unit: '%', benchmark: 28, invertDisplay: true,
     depts: [
       { name: 'Production', val: 38 }, { name: 'Commercial', val: 22 },
@@ -1244,7 +1288,7 @@ const KPI_PAGES = {
     }
   },
   qvt: {
-    title: 'Qualité de Vie au Travail', icon: '🌿', color: '#10B981',
+    title: 'Qualité de Vie au Travail', icon: '<svg class="ico"><use href="#i-feather"/></svg>', color: '#10B981',
     scoreKey: 'score_qvt', unit: '/100', benchmark: 65,
     depts: [
       { name: 'Production', val: 54 }, { name: 'Commercial', val: 68 },
@@ -1262,7 +1306,7 @@ const KPI_PAGES = {
     }
   },
   burnout: {
-    title: 'Risque Burnout', icon: '🔥', color: '#EF4444',
+    title: 'Risque Burnout', icon: '<svg class="ico"><use href="#i-zap"/></svg>', color: '#EF4444',
     scoreKey: 'score_burnout', unit: '/100', benchmark: 40, invertDisplay: true,
     depts: [
       { name: 'Production', val: 52 }, { name: 'Commercial', val: 48 },
@@ -1280,7 +1324,7 @@ const KPI_PAGES = {
     }
   },
   absenteisme: {
-    title: 'Absentéisme', icon: '🏥', color: '#EF4444',
+    title: 'Absentéisme', icon: '', color: '#EF4444',
     scoreKey: 'taux_absenteisme', unit: '%', benchmark: 3.5,
     depts: [
       { name: 'Production', val: 6.2 }, { name: 'Commercial', val: 4.1 },
@@ -1298,7 +1342,7 @@ const KPI_PAGES = {
     }
   },
   turnover: {
-    title: 'Turnover', icon: '🔄', color: '#F59E0B',
+    title: 'Turnover', icon: '', color: '#F59E0B',
     scoreKey: 'taux_turnover', unit: '%', benchmark: 12,
     depts: [
       { name: 'Production', val: 18 }, { name: 'Commercial', val: 24 },
@@ -1316,7 +1360,7 @@ const KPI_PAGES = {
     }
   },
   presenteisme: {
-    title: 'Présentéisme', icon: '😴', color: '#F59E0B',
+    title: 'Présentéisme', icon: '', color: '#F59E0B',
     scoreKey: 'score_presenteisme', unit: '/100', benchmark: 35, invertDisplay: true,
     depts: [
       { name: 'Production', val: 48 }, { name: 'Commercial', val: 42 },
@@ -1336,13 +1380,13 @@ const KPI_PAGES = {
 };
 
 const RADAR_AXES = [
-  { key: 'rps',          label: 'RPS',          icon: '⚡' },
-  { key: 'tms',          label: 'TMS',          icon: '🦴' },
-  { key: 'qvt',          label: 'QVT',          icon: '🌿' },
-  { key: 'burnout',      label: 'Burnout',      icon: '🔥' },
-  { key: 'absenteisme',  label: 'Absentéisme',  icon: '🏥' },
-  { key: 'turnover',     label: 'Turnover',     icon: '🔄' },
-  { key: 'presenteisme', label: 'Présentéisme', icon: '😴' },
+  { key: 'rps',          label: 'RPS',          icon: '<svg class="ico"><use href="#i-zap"/></svg>' },
+  { key: 'tms',          label: 'TMS',          icon: '<svg class="ico"><use href="#i-focus"/></svg>' },
+  { key: 'qvt',          label: 'QVT',          icon: '<svg class="ico"><use href="#i-feather"/></svg>' },
+  { key: 'burnout',      label: 'Burnout',      icon: '<svg class="ico"><use href="#i-zap"/></svg>' },
+  { key: 'absenteisme',  label: 'Absentéisme',  icon: '' },
+  { key: 'turnover',     label: 'Turnover',     icon: '' },
+  { key: 'presenteisme', label: 'Présentéisme', icon: '' },
 ];
 
 const BENCHMARK_SCORES = [68, 72, 65, 60, 75, 70, 65];
@@ -1359,78 +1403,78 @@ const answers = {};
 let currentQuestionnaire = 'manager';
 
 const DIMENSIONS = [
-  { code:'SME',  name:'Engagement direction — Mesure',        axe:'Manager', icon:'🎯', color:'#1E3A5F' },
-  { code:'SMI',  name:'Engagement direction — Mise en œuvre', axe:'Manager', icon:'⚙️', color:'#1E3A5F' },
-  { code:'SCS',  name:'Cohésion — Climat social',             axe:'Manager', icon:'🤝', color:'#2D5A8E' },
-  { code:'SI',   name:'Cohésion — Impact',                    axe:'Manager',  icon:'💡', color:'#2D5A8E' },
-  { code:'SA',   name:'RPS — Autonomie',                      axe:'Manager', icon:'🔓', color:'#F59E0B' },
-  { code:'SE',   name:'RPS — Exigence psychologique',         axe:'Manager',  icon:'⚡', color:'#F59E0B' },
-  { code:'SS',   name:'RPS — Soutien social',                 axe:'Manager', icon:'💬', color:'#F59E0B' },
-  { code:'SFB',  name:'TMS — Facteur biomécanique',           axe:'Manager',  icon:'🦴', color:'#7C3AED' },
-  { code:'SSI',  name:'TMS — Suivi',                          axe:'Manager', icon:'🩺', color:'#7C3AED' },
-  { code:'SE2',  name:'TMS — Environnement',                  axe:'Manager', icon:'🪑', color:'#7C3AED' },
-  { code:'SER',  name:'Engagement & Reconnaissance',          axe:'Salarié', icon:'⭐', color:'#10B981' },
-  { code:'SRC',  name:'Relations & Collectif',                axe:'Salarié',  icon:'👥', color:'#10B981' },
-  { code:'SVP',  name:'Vécu Psychosocial',                    axe:'Salarié',  icon:'🧠', color:'#EF4444' },
-  { code:'SSP',  name:'Santé Physique',                       axe:'Salarié', icon:'💪', color:'#10B981' },
+  { code:'SME',  name:'Engagement direction — Mesure',        axe:'Manager', icon:'<svg class="ico"><use href="#i-target"/></svg>', color:'#1E3A5F' },
+  { code:'SMI',  name:'Engagement direction — Mise en œuvre', axe:'Manager', icon:'<svg class="ico"><use href="#i-sliders"/></svg>', color:'#1E3A5F' },
+  { code:'SCS',  name:'Cohésion — Climat social',             axe:'Manager', icon:'<svg class="ico"><use href="#i-users"/></svg>', color:'#2D5A8E' },
+  { code:'SI',   name:'Cohésion — Impact',                    axe:'Manager',  icon:'<svg class="ico"><use href="#i-bulb"/></svg>', color:'#2D5A8E' },
+  { code:'SA',   name:'RPS — Autonomie',                      axe:'Manager', icon:'<svg class="ico"><use href="#i-unlock"/></svg>', color:'#F59E0B' },
+  { code:'SE',   name:'RPS — Exigence psychologique',         axe:'Manager',  icon:'<svg class="ico"><use href="#i-zap"/></svg>', color:'#F59E0B' },
+  { code:'SS',   name:'RPS — Soutien social',                 axe:'Manager', icon:'<svg class="ico"><use href="#i-message"/></svg>', color:'#F59E0B' },
+  { code:'SFB',  name:'TMS — Facteur biomécanique',           axe:'Manager',  icon:'<svg class="ico"><use href="#i-focus"/></svg>', color:'#7C3AED' },
+  { code:'SSI',  name:'TMS — Suivi',                          axe:'Manager', icon:'<svg class="ico"><use href="#i-stetho"/></svg>', color:'#7C3AED' },
+  { code:'SE2',  name:'TMS — Environnement',                  axe:'Manager', icon:'<svg class="ico"><use href="#i-focus"/></svg>', color:'#7C3AED' },
+  { code:'SER',  name:'Engagement & Reconnaissance',          axe:'Salarié', icon:'<svg class="ico"><use href="#i-star"/></svg>', color:'#10B981' },
+  { code:'SRC',  name:'Relations & Collectif',                axe:'Salarié',  icon:'<svg class="ico"><use href="#i-users"/></svg>', color:'#10B981' },
+  { code:'SVP',  name:'Vécu Psychosocial',                    axe:'Salarié',  icon:'<svg class="ico"><use href="#i-cpu"/></svg>', color:'#EF4444' },
+  { code:'SSP',  name:'Santé Physique',                       axe:'Salarié', icon:'<svg class="ico"><use href="#i-activity"/></svg>', color:'#10B981' },
 ];
 
 const QUESTIONS_MANAGER = [
-  { axe:'Engagement & Direction', color:'#1E3A5F', icon:'🎯', questions:[
+  { axe:'Engagement & Direction', color:'#1E3A5F', icon:'<svg class="ico"><use href="#i-target"/></svg>', questions:[
     { code:'ER1', text:'La direction a inscrit la prévention des risques professionnels dans le DUERP.' },
     { code:'ER2', text:'La direction a mis en place un comité de pilotage dédié à la prévention.' },
     { code:'ER3', text:'La démarche de prévention est documentée avec des objectifs définis.' },
   ]},
-  { axe:'Cohésion & Implication', color:'#2D5A8E', icon:'🤝', questions:[
+  { axe:'Cohésion & Implication', color:'#2D5A8E', icon:'<svg class="ico"><use href="#i-users"/></svg>', questions:[
     { code:'CI1', text:'Le diagnostic de risque fait l\'objet de discussions au sein des groupes de travail.' },
     { code:'CI2', text:'Les salariés disposent d\'opportunités pour participer à la prévention.' },
   ]},
-  { axe:'Risques Psychosociaux', color:'#F59E0B', icon:'⚡', questions:[
+  { axe:'Risques Psychosociaux', color:'#F59E0B', icon:'<svg class="ico"><use href="#i-zap"/></svg>', questions:[
     { code:'RPS1', text:'Les membres de mon équipe disposent d\'une autonomie suffisante pour organiser leurs tâches.' },
     { code:'RPS2', text:'La charge de travail dans mon équipe est adaptée aux ressources disponibles.' },
     { code:'RPS3', text:'Un climat de collaboration et d\'entraide est activement encouragé au sein de mon équipe.' },
   ]},
-  { axe:'Troubles Musculosquelettiques', color:'#7C3AED', icon:'🦴', questions:[
+  { axe:'Troubles Musculosquelettiques', color:'#7C3AED', icon:'<svg class="ico"><use href="#i-focus"/></svg>', questions:[
     { code:'TMS1', text:'Les postes de travail sont configurés pour permettre une posture confortable.' },
     { code:'TMS2', text:'Des actions correctives sont mises en œuvre suite à l\'identification de douleurs.' },
   ]},
 ];
 
 const QUESTIONS_SALARIE = [
-  { axe:'Engagement & Reconnaissance', color:'#10B981', icon:'⭐', questions:[
+  { axe:'Engagement & Reconnaissance', color:'#10B981', icon:'<svg class="ico"><use href="#i-star"/></svg>', questions:[
     { code:'ER_S1', text:'Je me sens reconnu(e) pour le travail que j\'effectue au quotidien.' },
     { code:'ER_S2', text:'Mon travail a du sens et contribue à quelque chose d\'important.' },
     { code:'ER_S3', text:'Je me sens impliqué(e) dans les décisions qui concernent mon travail.' },
   ]},
-  { axe:'Relations & Collectif', color:'#2D5A8E', icon:'👥', questions:[
+  { axe:'Relations & Collectif', color:'#2D5A8E', icon:'<svg class="ico"><use href="#i-users"/></svg>', questions:[
     { code:'RC_S1', text:'L\'ambiance au sein de mon équipe est bonne et les relations sont respectueuses.' },
     { code:'RC_S2', text:'Je peux compter sur mes collègues en cas de difficulté.' },
   ]},
-  { axe:'Vécu Psychosocial', color:'#EF4444', icon:'🧠', questions:[
+  { axe:'Vécu Psychosocial', color:'#EF4444', icon:'<svg class="ico"><use href="#i-cpu"/></svg>', questions:[
     { code:'VP_S1', text:'Je parviens à déconnecter du travail pendant mes temps de repos.' },
     { code:'VP_S2', text:'Mon niveau de stress au travail est gérable.' },
     { code:'VP_S3', text:'J\'ai les ressources nécessaires pour accomplir mes missions.' },
   ]},
-  { axe:'Santé Physique', color:'#7C3AED', icon:'💪', questions:[
+  { axe:'Santé Physique', color:'#7C3AED', icon:'<svg class="ico"><use href="#i-activity"/></svg>', questions:[
     { code:'SP_S1', text:'Je ne ressens pas de douleurs physiques liées à mon poste de travail.' },
     { code:'SP_S2', text:'Mon environnement de travail (bruit, température, ergonomie) est confortable.' },
   ]},
 ];
 
 const INTERVENTIONS_DATA = [
-  { icon:'💆', name:'Massage kiné', desc:'Séance de massage par un étudiant en kinésithérapie', delta:'+4.2', duree:'20 min' },
-  { icon:'🧘', name:'Sophrologie', desc:'Séance de relaxation et gestion du stress', delta:'+3.8', duree:'45 min' },
-  { icon:'🧠', name:'RDV psychologue', desc:'Consultation individuelle avec un psychologue du travail', delta:'+5.1', duree:'50 min' },
-  { icon:'🏃', name:'Activité physique', desc:'Atelier de remise en mouvement guidé', delta:'+3.2', duree:'30 min' },
-  { icon:'🎯', name:'Formation manager', desc:'Formation aux pratiques managériales préventives', delta:'+6.8', duree:'3h' },
-  { icon:'🍎', name:'Nutrition', desc:'Atelier nutrition & bien-être au travail', delta:'+2.1', duree:'1h' },
+  { icon:'<svg class="ico"><use href="#i-heart"/></svg>', name:'Massage kiné', desc:'Séance de massage par un étudiant en kinésithérapie', delta:'+4.2', duree:'20 min' },
+  { icon:'<svg class="ico"><use href="#i-feather"/></svg>', name:'Sophrologie', desc:'Séance de relaxation et gestion du stress', delta:'+3.8', duree:'45 min' },
+  { icon:'<svg class="ico"><use href="#i-cpu"/></svg>', name:'RDV psychologue', desc:'Consultation individuelle avec un psychologue du travail', delta:'+5.1', duree:'50 min' },
+  { icon:'<svg class="ico"><use href="#i-activity"/></svg>', name:'Activité physique', desc:'Atelier de remise en mouvement guidé', delta:'+3.2', duree:'30 min' },
+  { icon:'<svg class="ico"><use href="#i-target"/></svg>', name:'Formation manager', desc:'Formation aux pratiques managériales préventives', delta:'+6.8', duree:'3h' },
+  { icon:'<svg class="ico"><use href="#i-heart"/></svg>', name:'Nutrition', desc:'Atelier nutrition & bien-être au travail', delta:'+2.1', duree:'1h' },
 ];
 
 // ════════════════════════════════════════════
 // TOAST
 // ════════════════════════════════════════════
 function showToast(message, type = 'info', duration = 3500) {
-  const icons = { success:'✅', error:'❌', info:'ℹ️' };
+  const icons = { success:'', error:'', info:'ℹ' };
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
@@ -1674,10 +1718,10 @@ function animateValue(id, target, decimals = 1) {
 function updateGlobalBadge(score) {
   const el = document.getElementById('badgeGlobal');
   if (!el) return;
-  if (score >= 75)      { el.className = 'risk-badge risk-vert';   el.textContent = '✅ Bon niveau'; }
-  else if (score >= 55) { el.className = 'risk-badge risk-jaune';  el.textContent = '⚠️ À surveiller'; }
-  else if (score >= 35) { el.className = 'risk-badge risk-orange'; el.textContent = '🔶 Attention'; }
-  else                  { el.className = 'risk-badge risk-rouge';  el.textContent = '🔴 Critique'; }
+  if (score >= 75)      { el.className = 'risk-badge risk-vert';   el.textContent = ' Bon niveau'; }
+  else if (score >= 55) { el.className = 'risk-badge risk-jaune';  el.textContent = ' À surveiller'; }
+  else if (score >= 35) { el.className = 'risk-badge risk-orange'; el.textContent = ' Attention'; }
+  else                  { el.className = 'risk-badge risk-rouge';  el.textContent = ' Critique'; }
 }
 
 // ════════════════════════════════════════════
@@ -1766,13 +1810,14 @@ async function renderDimensions() {
       ['ser','src','svp','ssp'].forEach(c => reels[c.toUpperCase()] = moy(rs, c));
     }
   } catch(e) { /* silencieux */ }
+  window.__dimScores = reels;
   grid.innerHTML = DIMENSIONS.map(dm => {
     const d = Object.assign({}, dm, { score: reels[dm.code] });
     const aDonnee = d.score != null;
     const pct = aDonnee ? (d.score / 20) * 100 : 0;
     const riskColor = !aDonnee ? '#94A3B8' : pct >= 70 ? '#10B981' : pct >= 50 ? '#F59E0B' : '#EF4444';
     return `
-      <div class="dim-card">
+      <div class="dim-card" onclick="showDimensionDetail('${d.code}')" style="cursor:pointer;">
         <div class="dim-icon" style="background:${d.color}18;">${d.icon}</div>
         <div class="dim-info">
           <div class="dim-name">${d.name}</div>
@@ -1956,12 +2001,12 @@ function getRiskClass(val, kpi) {
 }
 
 function getRiskLabel(val, kpi) {
-  if (val == null) return '⚠️ Inconnu';
+  if (val == null) return ' Inconnu';
   const s = kpi.invertDisplay ? (100 - val) : val;
-  if (s >= 75) return '✅ Maîtrisé';
-  if (s >= 55) return '⚠️ À surveiller';
-  if (s >= 35) return '🔶 Modéré';
-  return '🔴 Critique';
+  if (s >= 75) return ' Maîtrisé';
+  if (s >= 55) return ' À surveiller';
+  if (s >= 35) return ' Modéré';
+  return ' Critique';
 }
 
 // ════════════════════════════════════════════
@@ -2054,7 +2099,7 @@ function renderSalarieQuestionnaire() {
       </div>
       <div id="salarieQContent"></div>
       <div style="margin-top:28px;display:flex;justify-content:flex-end;">
-        <button class="btn btn-primary" onclick="submitSalarieQuestionnaire()">Soumettre mes réponses ✨</button>
+        <button class="btn btn-primary" onclick="submitSalarieQuestionnaire()">Soumettre mes réponses <svg class="ico"><use href="#i-zap"/></svg></button>
       </div>
     </div>`;
 
@@ -2098,14 +2143,14 @@ async function submitSalarieQuestionnaire() {
 
   document.getElementById('salarieContent').innerHTML = `
     <div class="thankyou-screen">
-      <div class="thankyou-icon">✅</div>
+      <div class="thankyou-icon"></div>
       <div class="thankyou-title">Merci pour votre participation !</div>
       <div class="thankyou-sub">
         Vos réponses ont bien été enregistrées de façon anonyme.<br>
         Elles contribuent à améliorer le bien-être de votre équipe.
       </div>
       <div style="margin-top:28px;padding:20px;background:#F0FDF4;border-radius:14px;max-width:380px;margin-left:auto;margin-right:auto;">
-        <div style="font-size:14px;font-weight:700;color:#065F46;margin-bottom:8px;">💆 Vous avez participé à une séance ?</div>
+        <div style="font-size:14px;font-weight:700;color:#065F46;margin-bottom:8px;"><svg class="ico"><use href="#i-heart"/></svg> Vous avez participé à une séance ?</div>
         <div style="font-size:13px;color:#047857;margin-bottom:14px;">Partagez votre ressenti avant/après en 30 secondes.</div>
         <button class="btn btn-primary" onclick="openFeedbackModal(null)" style="width:100%;">Donner mon feedback de séance</button>
       </div>
@@ -2131,7 +2176,7 @@ async function submitQuestionnaire() {
   if (answered === 0) { showToast('Veuillez répondre à au moins une question.', 'error'); return; }
 
   if (!currentUser) {
-    showToast(`✨ ${answered} réponses envoyées !`, 'success', 4000);
+    showToast(`<svg class="ico"><use href="#i-zap"/></svg> ${answered} réponses envoyées !`, 'success', 4000);
     showScreen('dashboard', document.querySelector('.nav-item'));
     return;
   }
@@ -2176,7 +2221,7 @@ async function submitQuestionnaire() {
     }).catch(() => {});
   }
 
-  showToast(`✨ ${answered} réponses enregistrées !`, 'success', 4000);
+  showToast(`<svg class="ico"><use href="#i-zap"/></svg> ${answered} réponses enregistrées !`, 'success', 4000);
   showScreen('dashboard', document.querySelector('.nav-item'));
 }
 
@@ -2222,7 +2267,7 @@ function renderInterventions() {
       <div class="intervention-name">${iv.name}</div>
       <div class="intervention-desc">${iv.desc}</div>
       <div style="font-size:11px;color:var(--text-sub);margin-top:6px;">⏱ ${iv.duree}</div>
-      <div class="delta-preview">📈 Impact estimé : ${iv.delta} pts Scori</div>
+      <div class="delta-preview"><svg class="ico"><use href="#i-activity"/></svg> Impact estimé : ${iv.delta} pts Scori</div>
     </div>`).join('');
 }
 
@@ -2387,7 +2432,7 @@ function genererDUERP() {
 </style>
 </head>
 <body>
-<button class="print-btn no-print" onclick="window.print()">🖨 Imprimer / Sauvegarder PDF</button>
+<button class="print-btn no-print" onclick="window.print()"> Imprimer / Sauvegarder PDF</button>
 <div class="page">
 
   <!-- EN-TÊTE -->
@@ -2499,6 +2544,15 @@ function genererDUERP() {
   </div><!-- /page-break -->
 
 </div><!-- /page -->
+
+<!-- ── FICHE DÉTAIL DIMENSION ── -->
+<div id="dimModal" style="display:none;position:fixed;inset:0;z-index:1000;background:rgba(22,39,59,.55);backdrop-filter:blur(3px);" onclick="if(event.target===this)closeDimModal()">
+  <div class="dim-modal-card" role="dialog" aria-modal="true">
+    <button class="dim-modal-close" onclick="closeDimModal()" aria-label="Fermer">&times;</button>
+    <div id="dimModalContent"></div>
+  </div>
+</div>
+
 </body>
 </html>`;
 
@@ -2549,7 +2603,7 @@ async function submitFeedback() {
   const comment = document.getElementById('feedbackComment').value.trim() || null;
 
   if (!currentUser || !currentUtilisateur) {
-    showToast('✅ Feedback enregistré (mode démo) !', 'success', 3000);
+    showToast(' Feedback enregistré (mode démo) !', 'success', 3000);
     closeFeedbackModal();
     return;
   }
@@ -2573,7 +2627,7 @@ async function submitFeedback() {
 
   const delta = apres - avant;
   const sign  = delta > 0 ? '▲ +' : delta < 0 ? '▼ ' : '';
-  showToast(`Merci ! Ressenti : ${sign}${delta} pts après la séance 🙏`, 'success', 4000);
+  showToast(`Merci ! Ressenti : ${sign}${delta} pts après la séance `, 'success', 4000);
   closeFeedbackModal();
 }
 
@@ -2602,7 +2656,7 @@ async function renderEffetsInterventions() {
     if (!data || data.length === 0) {
       grid.innerHTML = `
         <div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
-          <div style="font-size:48px;margin-bottom:16px;">📊</div>
+          <div style="font-size:48px;margin-bottom:16px;"><svg class="ico"><use href="#i-chart"/></svg></div>
           <div style="font-size:17px;font-weight:700;color:var(--text-main);margin-bottom:8px;">Aucune donnée disponible</div>
           <div style="font-size:13px;color:var(--text-sub);max-width:360px;margin:0 auto;">
             Les effets s'afficheront dès que des salariés auront complété un feedback de séance.
@@ -2678,16 +2732,16 @@ function renderEffetsCards(data) {
 // CHANTIER 3 — INTERFACE PRATICIEN
 // ════════════════════════════════════════════
 const TMS_ZONES = [
-  { code:'nuque',    icon:'🦒', label:'Nuque / Cervicales' },
-  { code:'epaule_g', icon:'💪', label:'Épaule gauche' },
-  { code:'epaule_d', icon:'💪', label:'Épaule droite' },
-  { code:'coude_g',  icon:'🦾', label:'Coude gauche' },
-  { code:'coude_d',  icon:'🦾', label:'Coude droit' },
-  { code:'poignet_g',icon:'🖐', label:'Poignet gauche' },
-  { code:'poignet_d',icon:'🖐', label:'Poignet droit' },
-  { code:'dos_haut', icon:'🔝', label:'Dos haut / dorsal' },
-  { code:'dos_bas',  icon:'⬇️', label:'Lombaires / bas du dos' },
-  { code:'genoux',   icon:'🦵', label:'Genoux' },
+  { code:'nuque',    icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Nuque / Cervicales' },
+  { code:'epaule_g', icon:'<svg class="ico"><use href="#i-activity"/></svg>', label:'Épaule gauche' },
+  { code:'epaule_d', icon:'<svg class="ico"><use href="#i-activity"/></svg>', label:'Épaule droite' },
+  { code:'coude_g',  icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Coude gauche' },
+  { code:'coude_d',  icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Coude droit' },
+  { code:'poignet_g',icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Poignet gauche' },
+  { code:'poignet_d',icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Poignet droit' },
+  { code:'dos_haut', icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Dos haut / dorsal' },
+  { code:'dos_bas',  icon:'<svg class="ico"><use href="#i-download"/></svg>', label:'Lombaires / bas du dos' },
+  { code:'genoux',   icon:'<svg class="ico"><use href="#i-focus"/></svg>', label:'Genoux' },
 ];
 
 let _tmsState = {};  // zone.code → severite (0-3)
@@ -2713,7 +2767,7 @@ async function renderPraticienInterface() {
           <div class="chart-title">Cartographie musculo-squelettique</div>
           <div class="chart-sub">Cliquez sur une zone pour modifier la sévérité · 0 = sain · 1 = inconfort · 2 = douleur · 3 = critique</div>
         </div>
-        <button class="btn btn-primary" onclick="saveTmsObservations()">💾 Enregistrer</button>
+        <button class="btn btn-primary" onclick="saveTmsObservations()"> Enregistrer</button>
       </div>
       <div class="tms-grid" id="tmsGrid"></div>
     </div>
@@ -2735,7 +2789,7 @@ function renderTmsGrid() {
     const sev = _tmsState[z.code] ?? 0;
     const sevClass = sev > 0 ? `sev-${sev}` : '';
     const btns = [0,1,2,3].map(s => {
-      const labels = ['✓','!','!!','!!!'];
+      const labels = ['','!','!!','!!!'];
       const cls    = ['s0','s1','s2','s3'][s];
       return `<button class="tms-sev-btn ${cls}${sev===s?' active':''}"
         onclick="setTmsSeverite('${z.code}',${s})" title="Sévérité ${s}">${labels[s]}</button>`;
@@ -2765,7 +2819,7 @@ function renderTmsPriorite() {
   if (!list) return;
   const prioritaires = TMS_ZONES.filter(z => (_tmsState[z.code] ?? 0) >= 2);
   if (prioritaires.length === 0) {
-    list.innerHTML = '<p style="font-size:13px;color:var(--text-sub);">Aucune zone prioritaire identifiée ✅</p>';
+    list.innerHTML = '<p style="font-size:13px;color:var(--text-sub);">Aucune zone prioritaire identifiée </p>';
     return;
   }
   list.innerHTML = prioritaires.map(z => {
@@ -2779,7 +2833,7 @@ function renderTmsPriorite() {
           <div style="font-size:13px;font-weight:600;color:var(--text-main);">${z.label}</div>
           <div style="font-size:11px;font-weight:700;color:${colors[sev]};">${labels[sev]}</div>
         </div>
-        <span style="font-size:20px;">⚠️</span>
+        <span style="font-size:20px;"></span>
       </div>`;
   }).join('');
 }
@@ -2806,7 +2860,7 @@ async function saveTmsObservations() {
   if (errors > 0) {
     showToast(`${errors} erreur(s) lors de l'enregistrement.`, 'error');
   } else {
-    showToast(`✅ ${entries.length} zones enregistrées avec succès !`, 'success', 3000);
+    showToast(` ${entries.length} zones enregistrées avec succès !`, 'success', 3000);
   }
 }
 
@@ -2836,6 +2890,153 @@ async function doResetPassword() {
     document.getElementById('newPassConfirm').value = '';
   }, 2500);
 }
+
+// ════════════════════════════════════════════
+// FICHE DÉTAIL DIMENSION
+// ════════════════════════════════════════════
+const DIM_DETAILS = {
+  SME:{desc:"La manière dont la direction évalue et suit les risques professionnels : diagnostic, DUERP, indicateurs de pilotage.", q:['ER1'], src:'manager', reco:['Formation manager']},
+  SMI:{desc:"La mise en œuvre concrète de la prévention : comité de pilotage, moyens alloués, actions déployées.", q:['ER2'], src:'manager', reco:['Formation manager']},
+  SCS:{desc:"La qualité du climat social : dialogue et concertation autour du diagnostic des risques.", q:['CI1'], src:'manager', reco:['Formation manager']},
+  SI:{desc:"La participation des salariés à la démarche de prévention et l'impact réel de leur implication.", q:['CI2'], src:'manager', reco:['Formation manager']},
+  SA:{desc:"La marge de manœuvre des équipes dans l'organisation de leurs tâches — un facteur protecteur clé face aux RPS.", q:['RPS1'], src:'manager', reco:['Formation manager','Sophrologie']},
+  SE:{desc:"L'adéquation entre charge de travail et ressources disponibles — l'exigence psychologique excessive est un facteur de risque majeur.", q:['RPS2'], src:'manager', reco:['Sophrologie','RDV psychologue']},
+  SS:{desc:"Le soutien social au travail : entraide, collaboration et appui du management.", q:['RPS3'], src:'manager', reco:['Formation manager']},
+  SFB:{desc:"Les facteurs biomécaniques : postures contraignantes, gestes répétitifs, port de charges.", q:['TMS1'], src:'manager', reco:['Massage kiné','Activité physique']},
+  SSI:{desc:"Le suivi individuel des TMS : détection, remontée et prise en charge des douleurs.", q:['TMS2'], src:'manager', reco:['Massage kiné']},
+  SE2:{desc:"La structuration documentée de la démarche de prévention et de ses objectifs.", q:['ER3'], src:'manager', reco:['Formation manager']},
+  SER:{desc:"Le sentiment de reconnaissance, de sens et d'implication des salariés — le moteur de l'engagement.", q:['ER_S1','ER_S2','ER_S3'], src:'salarie', reco:['Formation manager']},
+  SRC:{desc:"La qualité des relations et de l'entraide au sein du collectif de travail.", q:['RC_S1','RC_S2'], src:'salarie', reco:['Formation manager','Sophrologie']},
+  SVP:{desc:"Le vécu psychosocial : stress, capacité de récupération, ressources disponibles — le prédicteur le plus fort de l'absentéisme dans la littérature.", q:['VP_S1','VP_S2','VP_S3'], src:'salarie', reco:['Sophrologie','RDV psychologue']},
+  SSP:{desc:"La santé physique perçue : douleurs liées au poste, confort de l'environnement de travail.", q:['SP_S1','SP_S2'], src:'salarie', reco:['Massage kiné','Activité physique']},
+};
+// Pondérations issues de la revue de littérature (calculer_humaniscore) — % au sein du bloc
+const DIM_POIDS = {
+  SME:{abs:8.2,turn:8.3,prod:6.1}, SMI:{abs:9.5,turn:10.0,prod:7.6}, SCS:{abs:10.2,turn:10.8,prod:8.4},
+  SI:{abs:8.8,turn:9.2,prod:6.9}, SA:{abs:10.9,turn:11.7,prod:11.5}, SE:{abs:12.2,turn:12.5,prod:12.2},
+  SS:{abs:11.6,turn:15.0,prod:13.0}, SFB:{abs:9.5,turn:6.7,prod:14.5}, SSI:{abs:10.9,turn:7.5,prod:9.2},
+  SE2:{abs:8.2,turn:5.8,prod:10.7},
+  SER:{abs:19.1,turn:26.4,prod:21.8}, SRC:{abs:20.6,turn:30.2,prod:20.0},
+  SVP:{abs:27.9,turn:32.1,prod:29.1}, SSP:{abs:22.1,turn:17.0,prod:32.7},
+};
+function questionTextByCode(code) {
+  for (const grp of [...QUESTIONS_MANAGER, ...QUESTIONS_SALARIE]) {
+    const f = (grp.questions || []).find(q => q.code === code);
+    if (f) return f.text;
+  }
+  return code;
+}
+function closeDimModal() { document.getElementById('dimModal').style.display = 'none'; }
+
+async function showDimensionDetail(code) {
+  const meta = DIMENSIONS.find(d => d.code === code);
+  const det = DIM_DETAILS[code];
+  if (!meta || !det) return;
+  const modal = document.getElementById('dimModal');
+  const box = document.getElementById('dimModalContent');
+  modal.style.display = 'block';
+
+  const score = window.__dimScores ? window.__dimScores[code] : null;
+  const pct = score != null ? (score / 20) * 100 : 0;
+  const riskColor = score == null ? '#94A3B8' : pct >= 70 ? '#2F9E77' : pct >= 50 ? '#DE9B2D' : '#D9534F';
+  const riskLabel = score == null ? 'Pas encore de donnée' : pct >= 70 ? 'Point fort' : pct >= 50 ? 'À surveiller' : 'Levier prioritaire';
+  const p = DIM_POIDS[code];
+  const poidsBar = (label, val, max) => `
+    <div style="display:flex;align-items:center;gap:10px;margin:6px 0;">
+      <span style="width:110px;font-size:12px;color:var(--text-sub);">${label}</span>
+      <div style="flex:1;height:8px;border-radius:99px;background:#EEF2F7;overflow:hidden;">
+        <div style="width:${Math.round(val/max*100)}%;height:100%;border-radius:99px;background:linear-gradient(90deg,#2F6DB3,#E8A33D);"></div>
+      </div>
+      <span style="width:48px;text-align:right;font-family:var(--font-display);font-size:13px;font-weight:600;">${val.toFixed(1)}%</span>
+    </div>`;
+
+  box.innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:6px;">
+      <div style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:${meta.color}18;">${meta.icon}</div>
+      <div style="flex:1;">
+        <div style="font-family:var(--font-display);font-size:19px;font-weight:700;">${meta.name}</div>
+        <div style="font-size:12px;color:var(--text-sub);">${meta.axe} · ${code} · ${det.src === 'manager' ? 'évalué par le manager' : 'évalué par les salariés'}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="font-family:var(--font-display);font-size:34px;font-weight:700;color:${riskColor};">${score != null ? score : '–'}<span style="font-size:15px;color:var(--text-sub);font-weight:500;">/20</span></div>
+        <div style="font-size:11px;font-weight:600;color:${riskColor};">${riskLabel}</div>
+      </div>
+    </div>
+    <p style="font-size:13.5px;line-height:1.55;color:var(--text-main);margin:12px 0 18px;">${det.desc}</p>
+
+    <div class="dim-detail-section"><div class="dim-detail-title">Poids dans les scores prédictifs</div>
+      <div style="font-size:11.5px;color:var(--text-sub);margin-bottom:8px;">Contribution de cette dimension au sein de son bloc (${det.src === 'manager' ? 'bloc manager' : 'bloc salariés'}), issue de la revue de littérature Humaniscore.</div>
+      ${poidsBar('Absentéisme', p.abs, 35)}${poidsBar('Turnover', p.turn, 35)}${poidsBar('Productivité', p.prod, 35)}
+    </div>
+
+    <div class="dim-detail-section"><div class="dim-detail-title">Réponses aux questions</div>
+      <div id="dimQuestions" style="font-size:13px;color:var(--text-sub);">Chargement…</div>
+    </div>
+
+    <div class="dim-detail-section"><div class="dim-detail-title">Évolution</div>
+      <div id="dimEvolution" style="font-size:13px;color:var(--text-sub);">Chargement…</div>
+    </div>
+
+    <div class="dim-detail-section"><div class="dim-detail-title">Interventions recommandées</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+        ${det.reco.map(r => `<span style="padding:6px 12px;border-radius:99px;background:#EAF2FB;color:var(--primary);font-size:12.5px;font-weight:600;">${r}</span>`).join('')}
+        <button class="btn btn-primary" style="padding:6px 14px;font-size:12.5px;margin-left:auto;" onclick="closeDimModal();document.querySelectorAll('.nav-item').forEach(n=>{if(n.textContent.includes('Interventions'))n.click();})">Voir le catalogue →</button>
+      </div>
+    </div>`;
+
+  // Moyennes par question (réponses brutes de la campagne)
+  try {
+    const camp = latestScores && latestScores.campagne_id;
+    const table = det.src === 'manager' ? 'reponses_manager' : 'reponses_salarie';
+    let qHtml = '<em>Disponible dès les premières réponses de la campagne.</em>';
+    if (camp) {
+      const { data: rows } = await _sb.from(table).select('reponses_brutes').eq('campagne_id', camp);
+      const bruts = (rows || []).map(r => r.reponses_brutes).filter(Boolean);
+      if (bruts.length) {
+        qHtml = det.q.map(qc => {
+          const vals = bruts.map(b => Number(b[qc])).filter(v => v >= 1);
+          const m = vals.length ? (vals.reduce((a,b)=>a+b,0) / vals.length) : null;
+          const mPct = m ? ((m - 1) / 3) * 100 : 0;
+          const mColor = m == null ? '#94A3B8' : mPct >= 66 ? '#2F9E77' : mPct >= 40 ? '#DE9B2D' : '#D9534F';
+          return `<div style="margin:10px 0;">
+            <div style="font-size:13px;color:var(--text-main);margin-bottom:4px;">${questionTextByCode(qc)}</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="flex:1;height:7px;border-radius:99px;background:#EEF2F7;overflow:hidden;"><div style="width:${mPct}%;height:100%;background:${mColor};border-radius:99px;"></div></div>
+              <span style="font-family:var(--font-display);font-size:13px;font-weight:600;color:${mColor};">${m != null ? m.toFixed(1) : '–'}/4</span>
+            </div>
+          </div>`;
+        }).join('') + `<div style="font-size:11px;color:var(--text-sub);margin-top:8px;">${bruts.length} répondant(s) · échelle 1 (jamais/pas d'accord) → 4 (toujours/tout à fait d'accord)</div>`;
+      }
+    }
+    document.getElementById('dimQuestions').innerHTML = qHtml;
+  } catch(e) { document.getElementById('dimQuestions').innerHTML = '<em>Détail indisponible.</em>'; }
+
+  // Évolution par campagne
+  try {
+    let evoHtml = "<em>L'évolution s'affichera dès la deuxième campagne (T1).</em>";
+    if (currentUtilisateur?.entreprise_id) {
+      const { data: camps } = await _sb.from('campagnes').select('id, periode').eq('entreprise_id', currentUtilisateur.entreprise_id).order('created_at');
+      const col = code.toLowerCase();
+      const table = det.src === 'manager' ? 'reponses_manager' : 'reponses_salarie';
+      const points = [];
+      for (const c of (camps || [])) {
+        const { data: rows } = await _sb.from(table).select(col).eq('campagne_id', c.id);
+        const vals = (rows || []).map(r => r[col]).filter(v => v != null).map(Number);
+        if (vals.length) points.push({ periode: c.periode, val: Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10 });
+      }
+      if (points.length >= 2) {
+        evoHtml = points.map((pt, i) => {
+          const d = i > 0 ? Math.round((pt.val - points[i-1].val)*10)/10 : null;
+          return `<span style="font-family:var(--font-display);font-weight:600;">${pt.periode} : ${pt.val}/20</span>${d != null ? ` <span style="color:${d>=0?'#2F9E77':'#D9534F'};font-size:12px;">(${d>=0?'▲ +':'▼ '}${Math.abs(d)})</span>` : ''}`;
+        }).join(' <span style="color:var(--text-sub);">→</span> ');
+      } else if (points.length === 1) {
+        evoHtml = `<span style="font-family:var(--font-display);font-weight:600;">${points[0].periode} : ${points[0].val}/20</span> — <em>l'évolution s'affichera dès la campagne suivante.</em>`;
+      }
+    }
+    document.getElementById('dimEvolution').innerHTML = evoHtml;
+  } catch(e) { document.getElementById('dimEvolution').innerHTML = '<em>Évolution indisponible.</em>'; }
+}
+
 </script>
 </body>
 </html>
