@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Scori by HumaniScore · moteur prédictif</title>
-<link rel="icon" href="logo.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='2' y='2' width='44' height='44' rx='12' fill='%2316273B'/%3E%3Cpolyline points='10 28 17 28 21 16 26 34 30 23 38 23' fill='none' stroke='%23E8A33D' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -735,6 +735,31 @@
     font-weight: 600; box-shadow: 0 0 0 3px rgba(47,109,179,.10); }
   .q-axe-title { letter-spacing: .02em; }
 
+  /* ── Connexion premium ── */
+  .login-screen { background:
+    linear-gradient(rgba(255,255,255,.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.028) 1px, transparent 1px),
+    radial-gradient(60% 50% at 75% 15%, rgba(232,163,61,.14) 0%, transparent 60%),
+    radial-gradient(70% 60% at 15% 90%, rgba(47,109,179,.18) 0%, transparent 60%),
+    linear-gradient(160deg, #16273B 0%, #1D3553 100%);
+    background-size: 44px 44px, 44px 44px, auto, auto, auto; }
+  .login-title { font-family: var(--font-display); font-size: 26px; letter-spacing: -0.02em; }
+  .login-sub { line-height: 1.7; }
+  .login-tag { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 99px;
+    border: 1px solid var(--border); font-size: 10.5px; font-weight: 600;
+    letter-spacing: .05em; text-transform: uppercase; color: var(--primary); }
+  .login-card { border: 1px solid rgba(255,255,255,.14); }
+
+  /* ── Micro-animations : la précision d'un moteur ── */
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  .screen.active .chart-card, .screen.active .kpi-metric-card, .screen.active .dim-card,
+  .screen.active .dashboard-hero { animation: rise .45s cubic-bezier(.22,.8,.3,1) backwards; }
+  .screen.active .kpi-metric-card:nth-child(2) { animation-delay: .05s; }
+  .screen.active .kpi-metric-card:nth-child(3), .screen.active .dim-card:nth-child(3) { animation-delay: .1s; }
+  .screen.active .kpi-metric-card:nth-child(4), .screen.active .dim-card:nth-child(4) { animation-delay: .15s; }
+  .kpi-metric-card:hover .kpi-metric-value { color: var(--primary-light); transition: color .2s; }
+  .kpi-dims-influentes > div:hover { border-color: var(--primary-light) !important; background: #F6FAFE; }
+
   /* ── Icônes vectorielles ── */
   .ico { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7;
     stroke-linecap: round; stroke-linejoin: round; vertical-align: -3px; }
@@ -879,9 +904,9 @@
 ══════════════════════════════════════ -->
 <div class="login-screen" id="loginScreen">
   <div class="login-card">
-    <img src="humaniscore_logo.png" style="width:90px;height:90px;object-fit:contain;margin:0 auto 20px;display:block;">
-    <div class="login-title">Connexion à Scori</div>
-    <div class="login-sub">Accès sur invitation uniquement</div>
+    <svg class="logo-mark" viewBox="0 0 48 48" style="width:64px;height:64px;margin:0 auto 18px;display:block;"><defs><linearGradient id="lgm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F6DB3"/><stop offset="1" stop-color="#16273B"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#lgm)"/><polyline points="10 28 17 28 21 16 26 34 30 23 38 23" fill="none" stroke="#E8A33D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="login-title">Scori</div>
+    <div class="login-sub">Moteur prédictif de santé au travail<br><span class="login-tag">Algorithme validé · 57 études scientifiques</span></div>
 
     <div class="form-group">
       <label class="form-label">Email professionnel</label>
@@ -909,7 +934,7 @@
 <div class="salarie-screen" id="salarieScreen">
   <div class="salarie-header">
     <div class="salarie-header-brand">
-      <img src="logo.png">
+      <svg class="logo-mark" viewBox="0 0 48 48" style="width:34px;height:34px;"><defs><linearGradient id="lgm2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F6DB3"/><stop offset="1" stop-color="#16273B"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#lgm2)"/><polyline points="10 28 17 28 21 16 26 34 30 23 38 23" fill="none" stroke="#E8A33D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <span class="salarie-brand-name">Scori</span>
       <span class="salarie-brand-sub">by HumaniScore</span>
     </div>
@@ -923,7 +948,7 @@
 ══════════════════════════════════════ -->
 <nav class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <img src="logo.png">
+    <svg class="logo-mark" viewBox="0 0 48 48" style="width:34px;height:34px;"><defs><linearGradient id="lgm2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2F6DB3"/><stop offset="1" stop-color="#16273B"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#lgm2)"/><polyline points="10 28 17 28 21 16 26 34 30 23 38 23" fill="none" stroke="#E8A33D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div class="sidebar-brand-text">
       <div class="brand-name">Scori</div>
       <div class="brand-sub">by HumaniScore</div>
@@ -1253,15 +1278,11 @@ const _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const KPI_PAGES = {
   rps: {
     title: 'Risque Psychosocial', icon: '<svg class="ico"><use href="#i-zap"/></svg>', color: '#F59E0B',
-    scoreKey: 'score_rps', unit: '/100', benchmark: 68,
-    depts: [
-      { name: 'Production', val: 42 }, { name: 'Commercial', val: 58 },
-      { name: 'RH', val: 71 }, { name: 'IT', val: 63 }, { name: 'Direction', val: 55 }
-    ],
+    scoreKey: 'score_rps', unit: '/100', 
     correlations: [
-      { kpi:'Burnout', dir:'neg', val:'−23 pts', text:"Un environnement psychosocial dégradé amplifie le risque d'épuisement" },
-      { kpi:'Absentéisme', dir:'neg', val:'+1.8%', text:'Le stress prolongé augmente les absences non programmées' },
-      { kpi:'QVT', dir:'pos', val:'+18 pts', text:"Un bon environnement psychosocial améliore la qualité de vie au travail" }
+      { kpi:'Burnout', dir:'neg', text:"Un environnement psychosocial dégradé amplifie le risque d'épuisement" },
+      { kpi:'Absentéisme', dir:'neg', text:'Le stress prolongé augmente les absences non programmées' },
+      { kpi:'QVT', dir:'pos', text:"Un bon environnement psychosocial améliore la qualité de vie au travail" }
     ],
     actions: {
       manager: ["Évaluer la charge de travail individuelle", "Organiser des points 1-to-1 réguliers", "Encourager les pauses et la déconnexion"],
@@ -1271,15 +1292,11 @@ const KPI_PAGES = {
   },
   tms: {
     title: 'Troubles Musculosquelettiques', icon: '<svg class="ico"><use href="#i-focus"/></svg>', color: '#7C3AED',
-    scoreKey: 'prevalence_tms', unit: '%', benchmark: 28, invertDisplay: true,
-    depts: [
-      { name: 'Production', val: 38 }, { name: 'Commercial', val: 22 },
-      { name: 'RH', val: 18 }, { name: 'IT', val: 29 }, { name: 'Direction', val: 15 }
-    ],
+    scoreKey: 'prevalence_tms', unit: '%', invertDisplay: true,
     correlations: [
-      { kpi:'Absentéisme', dir:'neg', val:'+2.3%', text:'Les troubles physiques sont la 1ère cause d\'arrêts de travail' },
-      { kpi:'Présentéisme', dir:'neg', val:'+14 pts', text:'Les douleurs non traitées réduisent fortement la concentration' },
-      { kpi:'QVT', dir:'neg', val:'−11 pts', text:'L\'inconfort physique dégrade le ressenti global au travail' }
+      { kpi:'Absentéisme', dir:'neg', text:'Les troubles physiques sont la 1ère cause d\'arrêts de travail' },
+      { kpi:'Présentéisme', dir:'neg', text:'Les douleurs non traitées réduisent fortement la concentration' },
+      { kpi:'QVT', dir:'neg', text:'L\'inconfort physique dégrade le ressenti global au travail' }
     ],
     actions: {
       manager: ["Identifier les postes à risque biomécanique", "Organiser des pauses actives régulières", "Faciliter l'accès aux soins préventifs"],
@@ -1289,15 +1306,11 @@ const KPI_PAGES = {
   },
   qvt: {
     title: 'Qualité de Vie au Travail', icon: '<svg class="ico"><use href="#i-feather"/></svg>', color: '#10B981',
-    scoreKey: 'score_qvt', unit: '/100', benchmark: 65,
-    depts: [
-      { name: 'Production', val: 54 }, { name: 'Commercial', val: 68 },
-      { name: 'RH', val: 75 }, { name: 'IT', val: 70 }, { name: 'Direction', val: 72 }
-    ],
+    scoreKey: 'score_qvt', unit: '/100', 
     correlations: [
-      { kpi:'Turnover', dir:'pos', val:'−8%', text:'Une bonne QVT réduit significativement les départs volontaires' },
-      { kpi:'Engagement', dir:'pos', val:'+22 pts', text:'Les collaborateurs épanouis sont naturellement plus investis' },
-      { kpi:'Absentéisme', dir:'pos', val:'−1.2%', text:'Un environnement positif diminue les absences courtes' }
+      { kpi:'Turnover', dir:'pos', text:'Une bonne QVT réduit significativement les départs volontaires' },
+      { kpi:'Engagement', dir:'pos', text:'Les collaborateurs épanouis sont naturellement plus investis' },
+      { kpi:'Absentéisme', dir:'pos', text:'Un environnement positif diminue les absences courtes' }
     ],
     actions: {
       manager: ["Organiser des moments de convivialité d'équipe", "Reconnaître publiquement les contributions", "Instaurer un feedback régulier bienveillant"],
@@ -1307,15 +1320,11 @@ const KPI_PAGES = {
   },
   burnout: {
     title: 'Risque Burnout', icon: '<svg class="ico"><use href="#i-zap"/></svg>', color: '#EF4444',
-    scoreKey: 'score_burnout', unit: '/100', benchmark: 40, invertDisplay: true,
-    depts: [
-      { name: 'Production', val: 52 }, { name: 'Commercial', val: 48 },
-      { name: 'RH', val: 35 }, { name: 'IT', val: 44 }, { name: 'Direction', val: 39 }
-    ],
+    scoreKey: 'score_burnout', unit: '/100', invertDisplay: true,
     correlations: [
-      { kpi:'RPS', dir:'neg', val:'+23 pts', text:'Le risque d\'épuisement est amplifié par un stress psychosocial élevé' },
-      { kpi:'Absentéisme', dir:'neg', val:'+3.1%', text:'L\'épuisement professionnel précède souvent des arrêts prolongés' },
-      { kpi:'Turnover', dir:'neg', val:'+6%', text:'Les collaborateurs proches du burnout quittent plus souvent l\'entreprise' }
+      { kpi:'RPS', dir:'neg', text:'Le risque d\'épuisement est amplifié par un stress psychosocial élevé' },
+      { kpi:'Absentéisme', dir:'neg', text:'L\'épuisement professionnel précède souvent des arrêts prolongés' },
+      { kpi:'Turnover', dir:'neg', text:'Les collaborateurs proches du burnout quittent plus souvent l\'entreprise' }
     ],
     actions: {
       manager: ["Surveiller les signaux de surcharge", "Redistribuer équitablement les charges", "Encourager la prise de congés réels"],
@@ -1325,15 +1334,11 @@ const KPI_PAGES = {
   },
   absenteisme: {
     title: 'Absentéisme', icon: '', color: '#EF4444',
-    scoreKey: 'taux_absenteisme', unit: '%', benchmark: 3.5,
-    depts: [
-      { name: 'Production', val: 6.2 }, { name: 'Commercial', val: 4.1 },
-      { name: 'RH', val: 2.8 }, { name: 'IT', val: 3.5 }, { name: 'Direction', val: 1.9 }
-    ],
+    scoreKey: 'taux_absenteisme', unit: '%', 
     correlations: [
-      { kpi:'RPS', dir:'neg', val:'−18 pts', text:"Les absences courtes répétées signalent souvent un mal-être au travail" },
-      { kpi:'TMS', dir:'neg', val:'+2.3%', text:'Les troubles physiques sont la principale cause d\'arrêts maladie' },
-      { kpi:'Engagement', dir:'pos', val:'−1.4%', text:'Un salarié engagé s\'absente moins et de façon moins prolongée' }
+      { kpi:'RPS', dir:'neg', text:"Les absences courtes répétées signalent souvent un mal-être au travail" },
+      { kpi:'TMS', dir:'neg', text:'Les troubles physiques sont la principale cause d\'arrêts maladie' },
+      { kpi:'Engagement', dir:'pos', text:'Un salarié engagé s\'absente moins et de façon moins prolongée' }
     ],
     actions: {
       manager: ["Analyser les absences par motif et durée", "Préparer des entretiens de retour bienveillants", "Identifier les conditions de travail à améliorer"],
@@ -1343,15 +1348,11 @@ const KPI_PAGES = {
   },
   turnover: {
     title: 'Turnover', icon: '', color: '#F59E0B',
-    scoreKey: 'taux_turnover', unit: '%', benchmark: 12,
-    depts: [
-      { name: 'Production', val: 18 }, { name: 'Commercial', val: 24 },
-      { name: 'RH', val: 9 }, { name: 'IT', val: 15 }, { name: 'Direction', val: 6 }
-    ],
+    scoreKey: 'taux_turnover', unit: '%', 
     correlations: [
-      { kpi:'QVT', dir:'pos', val:'−8%', text:'Une bonne qualité de vie au travail fidélise les collaborateurs' },
-      { kpi:'Burnout', dir:'neg', val:'+6%', text:"L'épuisement professionnel accélère les départs non souhaités" },
-      { kpi:'Engagement', dir:'pos', val:'−12%', text:'Les équipes engagées ont un turnover nettement plus faible' }
+      { kpi:'QVT', dir:'pos', text:'Une bonne qualité de vie au travail fidélise les collaborateurs' },
+      { kpi:'Burnout', dir:'neg', text:"L'épuisement professionnel accélère les départs non souhaités" },
+      { kpi:'Engagement', dir:'pos', text:'Les équipes engagées ont un turnover nettement plus faible' }
     ],
     actions: {
       manager: ["Conduire des entretiens de rétention réguliers", "Valoriser les perspectives d'évolution", "Améliorer l'intégration des nouveaux arrivants"],
@@ -1361,15 +1362,11 @@ const KPI_PAGES = {
   },
   presenteisme: {
     title: 'Présentéisme', icon: '', color: '#F59E0B',
-    scoreKey: 'score_presenteisme', unit: '/100', benchmark: 35, invertDisplay: true,
-    depts: [
-      { name: 'Production', val: 48 }, { name: 'Commercial', val: 42 },
-      { name: 'RH', val: 31 }, { name: 'IT', val: 39 }, { name: 'Direction', val: 27 }
-    ],
+    scoreKey: 'score_presenteisme', unit: '/100', invertDisplay: true,
     correlations: [
-      { kpi:'TMS', dir:'neg', val:'+14 pts', text:'Les douleurs physiques chroniques réduisent fortement la concentration' },
-      { kpi:'Burnout', dir:'neg', val:'+19 pts', text:'L\'épuisement silencieux est souvent invisibilisé par le présentéisme' },
-      { kpi:'QVT', dir:'neg', val:'−16 pts', text:'Être présent sans être efficace dégrade la qualité de vie perçue' }
+      { kpi:'TMS', dir:'neg', text:'Les douleurs physiques chroniques réduisent fortement la concentration' },
+      { kpi:'Burnout', dir:'neg', text:'L\'épuisement silencieux est souvent invisibilisé par le présentéisme' },
+      { kpi:'QVT', dir:'neg', text:'Être présent sans être efficace dégrade la qualité de vie perçue' }
     ],
     actions: {
       manager: ["Détecter les signaux de travail dégradé", "Encourager à prendre soin de sa santé", "Instaurer une culture de résultat vs de présence"],
@@ -1858,27 +1855,12 @@ function showKPIPage(key) {
   const deltaSign = '';
   const deltaClass = 'pos';
 
-  const vsSecteurl = kpi.benchmark != null
-    ? `<span class="kpi-benchmark">vs secteur : ${kpi.benchmark}${kpi.unit}</span>`
-    : '';
+  const vsSecteurl = '';
 
-  const maxDept = Math.max(...kpi.depts.map(d => d.val));
-  const deptHTML = kpi.depts.map(d => {
-    const pct = Math.round((d.val / (kpi.unit === '%' ? Math.max(maxDept, 10) : 100)) * 100);
-    const risk = kpi.invertDisplay
-      ? (d.val > kpi.benchmark * 1.3 ? '#EF4444' : d.val > kpi.benchmark ? '#F59E0B' : '#10B981')
-      : (d.val >= kpi.benchmark * 0.9 ? '#10B981' : d.val >= kpi.benchmark * 0.7 ? '#F59E0B' : '#EF4444');
-    return `
-      <div class="dept-bar-row">
-        <div class="dept-bar-name">${d.name}</div>
-        <div class="dept-bar-track"><div class="dept-bar-fill" style="width:0%;background:${risk};" data-width="${pct}%"></div></div>
-        <div class="dept-bar-val" style="color:${risk}">${d.val}${kpi.unit}</div>
-      </div>`;
-  }).join('');
+  const deptHTML = '<div style="font-size:13px;color:var(--text-sub);">Chargement…</div>';
 
   const corrHTML = kpi.correlations.map(c => `
     <div class="corr-card">
-      <div class="corr-val ${c.dir}">${c.val}</div>
       <div><div class="corr-kpi">${c.kpi}</div><div class="corr-text">${c.text}</div></div>
     </div>`).join('');
 
@@ -1915,12 +1897,12 @@ function showKPIPage(key) {
 
     <div class="kpi-detail-grid">
       <div class="chart-card">
-        <div class="chart-title">Évolution sur 6 périodes</div>
-        <div class="chart-sub">Tendance observée</div>
+        <div class="chart-title">Évolution par campagne</div>
+        <div class="chart-sub">Mesures réelles T0 → Tn</div>
         <div class="chart-container"><canvas id="${evoId}"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-title">Répartition par département</div>
+        <div class="chart-title">Répartition par équipe</div>
         <div class="chart-sub">Comparatif interne</div>
         <div class="kpi-dept-bars" id="deptBars_${key}">${deptHTML}</div>
       </div>
@@ -1929,7 +1911,9 @@ function showKPIPage(key) {
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px;">
       <div class="chart-card">
         <div class="chart-title">Impact sur d'autres indicateurs</div>
-        <div class="chart-sub">Corrélations observées</div>
+        <div class="chart-sub">Relations documentées dans la littérature</div>
+        <div class="kpi-dims-influentes" id="dimsInfl_${key}"></div>
+        <div style="height:10px"></div>
         <div class="kpi-correlations">${corrHTML}</div>
       </div>
       <div class="chart-card">
@@ -1942,54 +1926,94 @@ function showKPIPage(key) {
 
   showScreen('kpi-detail', null);
 
-  setTimeout(() => {
-    document.querySelectorAll(`#deptBars_${key} .dept-bar-fill`).forEach(b => {
-      b.style.transition = 'width 0.8s ease';
-      b.style.width = b.dataset.width;
-    });
-  }, 100);
+  chargerDetailsKPI(key, kpi, evoId);
+}
 
-  setTimeout(() => {
+async function chargerDetailsKPI(key, kpi, evoId) {
+  try {
     const evoCtx = document.getElementById(evoId);
-    if (!evoCtx) return;
-    const mockEvo = generateMockEvo(scoreVal, kpi.invertDisplay);
-    new Chart(evoCtx, {
-      type: 'line',
-      data: {
-        labels: ['T-5', 'T-4', 'T-3', 'T-2', 'T-1', 'T0'],
-        datasets: [{
-          label: kpi.title,
-          data: mockEvo,
-          borderColor: kpi.color,
-          backgroundColor: kpi.color + '18',
-          borderWidth: 2.5, fill: true, tension: 0.4,
-          pointRadius: 5, pointBackgroundColor: kpi.color,
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          y: { grid: { color: '#F1F5F9' } },
-          x: { grid: { display: false } }
-        }
+    if (evoCtx && currentUtilisateur?.entreprise_id) {
+      const { data: camps } = await _sb.from('campagnes').select('id, periode')
+        .eq('entreprise_id', currentUtilisateur.entreprise_id).order('created_at');
+      const ids = (camps || []).map(c => c.id);
+      let points = [];
+      if (ids.length) {
+        const { data: rows } = await _sb.from('scores_humaniscore')
+          .select('campagne_id, calcule_le, ' + kpi.scoreKey)
+          .in('campagne_id', ids).order('calcule_le', { ascending: false });
+        const parCamp = {};
+        (rows || []).forEach(r => { if (!parCamp[r.campagne_id]) parCamp[r.campagne_id] = r; });
+        points = (camps || []).filter(c => parCamp[c.id] && parCamp[c.id][kpi.scoreKey] != null)
+          .map(c => ({ periode: c.periode, val: Number(parCamp[c.id][kpi.scoreKey]) }));
       }
-    });
-  }, 150);
+      if (points.length >= 2) {
+        evoCtx.width = 500; evoCtx.height = 240;
+        new Chart(evoCtx, { type: 'line',
+          data: { labels: points.map(p => p.periode),
+            datasets: [{ data: points.map(p => p.val), borderColor: kpi.color,
+              backgroundColor: kpi.color + '18', borderWidth: 2.5, fill: true,
+              tension: 0.35, pointRadius: 5, pointBackgroundColor: kpi.color }] },
+          options: { responsive: false, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: { y: { grid: { color: '#F1F5F9' } }, x: { grid: { display: false } } } } });
+      } else {
+        evoCtx.parentElement.innerHTML = '<div style="font-size:13px;color:var(--text-sub);padding:26px 4px;">' +
+          (points.length === 1 ? `Première mesure : <strong>${points[0].val}${kpi.unit}</strong> (${points[0].periode}). ` : '') +
+          "La courbe d'évolution s'affichera dès la deuxième campagne.</div>";
+      }
+    }
+  } catch(e) { /* silencieux */ }
+
+  try {
+    const cont = document.getElementById('deptBars_' + key);
+    if (cont && latestScores) {
+      const { data: eqs } = await _sb.from('equipes').select('id, nom')
+        .eq('entreprise_id', currentUtilisateur.entreprise_id);
+      const { data: rows } = await _sb.from('scores_humaniscore')
+        .select('equipe_id, ' + kpi.scoreKey)
+        .eq('campagne_id', latestScores.campagne_id).not('equipe_id', 'is', null);
+      const nomEq = {}; (eqs || []).forEach(e => nomEq[e.id] = e.nom);
+      const items = (rows || []).filter(r => r[kpi.scoreKey] != null);
+      if (items.length >= 2) {
+        cont.innerHTML = items.map(r => {
+          const v = Number(r[kpi.scoreKey]);
+          const s = kpi.invertDisplay ? (100 - v) : v;
+          const col = s >= 75 ? '#2F9E77' : s >= 55 ? '#DE9B2D' : '#D9534F';
+          return `<div class="dept-bar-row"><div class="dept-bar-name">${nomEq[r.equipe_id] || 'Équipe'}</div>
+            <div class="dept-bar-track"><div class="dept-bar-fill" style="width:${Math.min(v,100)}%;background:${col};"></div></div>
+            <div class="dept-bar-val" style="color:${col}">${v.toFixed(1)}${kpi.unit}</div></div>`;
+        }).join('');
+      } else {
+        cont.innerHTML = '<div style="font-size:13px;color:var(--text-sub);padding:14px 4px;">La comparaison s\'affichera quand au moins deux équipes auront répondu.</div>';
+      }
+    }
+  } catch(e) { /* silencieux */ }
+
+  try {
+    const cont = document.getElementById('dimsInfl_' + key);
+    if (cont) {
+      const MAP_KPI_DIMS = { absenteisme: 'abs', turnover: 'turn', presenteisme: 'prod',
+        rps: ['SA','SE','SS'], tms: ['SFB','SSI','SSP'], qvt: ['SER','SRC','SVP'], burnout: ['SVP','SE','SS'] };
+      let codes;
+      const m = MAP_KPI_DIMS[key];
+      if (Array.isArray(m)) codes = m;
+      else if (m) codes = Object.entries(DIM_POIDS).sort((a,b) => b[1][m] - a[1][m]).slice(0,3).map(e => e[0]);
+      if (codes && codes.length) {
+        cont.innerHTML = '<div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--primary);margin:14px 0 8px;">Dimensions influentes</div>' +
+          codes.map(c => {
+            const d = DIMENSIONS.find(x => x.code === c);
+            const sc = window.__dimScores ? window.__dimScores[c] : null;
+            const col = sc == null ? '#94A3B8' : sc >= 14 ? '#2F9E77' : sc >= 10 ? '#DE9B2D' : '#D9534F';
+            return `<div onclick="showDimensionDetail('${c}')" style="display:flex;align-items:center;gap:8px;padding:7px 10px;margin:4px 0;border:1px solid var(--border);border-radius:10px;cursor:pointer;font-size:12.5px;">
+              <span style="flex:1;">${d ? d.name : c}</span>
+              <span style="font-family:var(--font-display);font-weight:700;color:${col};">${sc != null ? sc + '/20' : '–'}</span></div>`;
+          }).join('');
+      }
+    }
+  } catch(e) { /* silencieux */ }
 }
 
-function generateMockEvo(currentVal, inverted) {
-  const base = currentVal ?? 50;
-  const trend = inverted ? -1 : 1;
-  return [
-    +(base - 8 * trend + (Math.random()-0.5)*4).toFixed(1),
-    +(base - 6 * trend + (Math.random()-0.5)*4).toFixed(1),
-    +(base - 4 * trend + (Math.random()-0.5)*3).toFixed(1),
-    +(base - 2.5 * trend + (Math.random()-0.5)*3).toFixed(1),
-    +(base - 1 * trend + (Math.random()-0.5)*2).toFixed(1),
-    +base.toFixed(1),
-  ];
-}
+
 
 function getRiskClass(val, kpi) {
   if (val == null) return 'risk-jaune';
