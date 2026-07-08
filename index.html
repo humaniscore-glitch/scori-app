@@ -7,7 +7,7 @@
 <link rel="icon" href="logo.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --primary:      #1E3A5F;
@@ -651,6 +651,95 @@
     .duerp-no-print   { display:none  !important; }
   }
   .duerp-print-only { display:none; }
+
+  /* ═══════════════════════════════════════════════════════
+     THÈME SCORI v2 — Sérieux médical, chaleur humaine
+     Palette ancrée dans le logo HumaniScore (encre + ambre)
+     ═══════════════════════════════════════════════════════ */
+  :root {
+    --primary:      #23486E;
+    --primary-dark: #16273B;
+    --primary-light:#2F6DB3;
+    --accent:       #E8A33D;
+    --accent-blue:  #8FBFE8;
+    --bg:           #F6F8FA;
+    --sidebar-bg:   #16273B;
+    --card-bg:      #FFFFFF;
+    --text-main:    #1B2B3D;
+    --text-sub:     #62748A;
+    --border:       #E3EAF1;
+    --success:      #2F9E77;
+    --warning:      #DE9B2D;
+    --danger:       #D9534F;
+    --radius:       16px;
+    --shadow:       0 1px 2px rgba(22,39,59,.05), 0 8px 24px -12px rgba(22,39,59,.12);
+    --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  }
+  body { background: var(--bg); color: var(--text-main); -webkit-font-smoothing: antialiased; }
+
+  /* ── Typographie : les chiffres sont les héros ── */
+  h1, h2, h3, .chart-title, #pageTitle, .login-title, .kpi-hero-title, .q-axe-title,
+  .section-label { font-family: var(--font-display); letter-spacing: -0.01em; }
+  .hero-score-number, .kpi-metric-value, .kpi-hero-score, .dim-score-right,
+  .roi-summary-value, .slider-val { font-family: var(--font-display); font-variant-numeric: tabular-nums; }
+
+  /* ── Cartes : blanches, nettes, calmes ── */
+  .chart-card, .kpi-metric-card, .dim-card, .login-card, .q-item, .intervention-card,
+  .kpi-hero-band { border-radius: var(--radius); border: 1px solid var(--border);
+    box-shadow: var(--shadow); background: var(--card-bg); }
+  .chart-card:hover, .kpi-metric-card:hover { box-shadow: 0 2px 4px rgba(22,39,59,.06), 0 14px 32px -12px rgba(22,39,59,.16); }
+  .chart-sub, .dim-source, .kpi-metric-sub { color: var(--text-sub); }
+
+  /* ── Sidebar : encre profonde, indicateur ambré ── */
+  .sidebar { background: linear-gradient(180deg, #16273B 0%, #132133 100%); }
+  .nav-item { border-radius: 10px; margin: 2px 10px; color: #A9BBD1; transition: all .18s ease; position: relative; }
+  .nav-item:hover { background: rgba(255,255,255,.06); color: #EAF1F8; }
+  .nav-item.active { background: rgba(232,163,61,.13); color: #F4C87A; }
+  .nav-item.active::before { content:''; position:absolute; left:-10px; top:20%; bottom:20%;
+    width:3px; border-radius:3px; background: var(--accent); }
+  .sidebar-brand-text { font-family: var(--font-display); }
+
+  /* ── Le signature : le Humaniscore en halo ambré ── */
+  .hero-score-label { letter-spacing: .14em; color: rgba(255,255,255,.65); }
+  #scoreGlobal { background: linear-gradient(135deg, #F4C87A 0%, #E8A33D 55%, #E38B2D 100%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    font-weight: 700; letter-spacing: -0.03em;
+    text-shadow: none; filter: drop-shadow(0 0 22px rgba(232,163,61,.35)); }
+  .hero-score-unit { color: rgba(255,255,255,.45); }
+
+  /* ── Boutons ── */
+  .btn { border-radius: 12px; font-weight: 600; transition: all .18s ease; }
+  .btn-primary, .btn.btn-primary { background: var(--primary); border: none; }
+  .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px);
+    box-shadow: 0 6px 16px -6px rgba(47,109,179,.5); }
+
+  /* ── Formulaires & connexion ── */
+  .form-input { border-radius: 12px; border: 1.5px solid var(--border); transition: all .15s ease; }
+  .form-input:focus { border-color: var(--primary-light); box-shadow: 0 0 0 4px rgba(47,109,179,.12); outline: none; }
+  .login-screen { background:
+    radial-gradient(60% 50% at 70% 20%, rgba(232,163,61,.14) 0%, transparent 60%),
+    radial-gradient(70% 60% at 20% 85%, rgba(47,109,179,.16) 0%, transparent 60%),
+    linear-gradient(160deg, #16273B 0%, #1D3553 100%); }
+  .login-card { padding-top: 40px; }
+  .login-sub { color: var(--text-sub); }
+
+  /* ── Badges & jauges ── */
+  .risk-badge { border-radius: 999px; font-weight: 600; letter-spacing: .01em; }
+  .progress-bar { border-radius: 999px; background: #EEF2F7; }
+  .progress-fill { border-radius: 999px; transition: width .8s cubic-bezier(.22,.8,.3,1); }
+
+  /* ── Questionnaire : réponses confortables ── */
+  .q-opt { border-radius: 12px; border: 1.5px solid var(--border); transition: all .15s ease; }
+  .q-opt:hover { border-color: var(--primary-light); background: #F2F7FC; }
+  .q-opt.selected { border-color: var(--primary-light); background: #EAF2FB; color: var(--primary);
+    font-weight: 600; box-shadow: 0 0 0 3px rgba(47,109,179,.10); }
+  .q-axe-title { letter-spacing: .02em; }
+
+  /* ── Accessibilité & finitions ── */
+  :focus-visible { outline: 2px solid var(--primary-light); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after {
+    animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
 </style>
 </head>
 <body>
@@ -748,11 +837,11 @@
 
     <div class="form-group">
       <label class="form-label">Email professionnel</label>
-      <input type="email" class="form-input" id="loginEmail" placeholder="votre@email.com" value="demo@humaniscore.com">
+      <input type="email" class="form-input" id="loginEmail" placeholder="votre@email.com">
     </div>
     <div class="form-group">
       <label class="form-label">Mot de passe</label>
-      <input type="password" class="form-input" id="loginPass" placeholder="••••••••" value="demo1234"
+      <input type="password" class="form-input" id="loginPass" placeholder="••••••••"
         onkeydown="if(event.key==='Enter') doLogin()">
     </div>
 
@@ -829,8 +918,8 @@
     <div class="user-badge">
       <div class="avatar" id="userAvatar">DH</div>
       <div class="user-info">
-        <div class="user-name" id="userName">Demo HumaniScore</div>
-        <div class="user-role" id="userRole">DRH</div>
+        <div class="user-name" id="userName"></div>
+        <div class="user-role" id="userRole"></div>
       </div>
     </div>
     <button class="btn-logout" onclick="doLogout()">🚪 Déconnexion</button>
@@ -1266,20 +1355,20 @@ const answers = {};
 let currentQuestionnaire = 'manager';
 
 const DIMENSIONS = [
-  { code:'SME',  name:'Engagement direction — Mesure',        axe:'Manager', score:14, icon:'🎯', color:'#1E3A5F' },
-  { code:'SMI',  name:'Engagement direction — Mise en œuvre', axe:'Manager', score:12, icon:'⚙️', color:'#1E3A5F' },
-  { code:'SCS',  name:'Cohésion — Climat social',             axe:'Manager', score:11, icon:'🤝', color:'#2D5A8E' },
-  { code:'SI',   name:'Cohésion — Impact',                    axe:'Manager', score:8,  icon:'💡', color:'#2D5A8E' },
-  { code:'SA',   name:'RPS — Autonomie',                      axe:'Manager', score:13, icon:'🔓', color:'#F59E0B' },
-  { code:'SE',   name:'RPS — Exigence psychologique',         axe:'Manager', score:7,  icon:'⚡', color:'#F59E0B' },
-  { code:'SS',   name:'RPS — Soutien social',                 axe:'Manager', score:10, icon:'💬', color:'#F59E0B' },
-  { code:'SFB',  name:'TMS — Facteur biomécanique',           axe:'Manager', score:9,  icon:'🦴', color:'#7C3AED' },
-  { code:'SSI',  name:'TMS — Suivi',                          axe:'Manager', score:15, icon:'🩺', color:'#7C3AED' },
-  { code:'SE2',  name:'TMS — Environnement',                  axe:'Manager', score:16, icon:'🪑', color:'#7C3AED' },
-  { code:'SER',  name:'Engagement & Reconnaissance',          axe:'Salarié', score:11, icon:'⭐', color:'#10B981' },
-  { code:'SRC',  name:'Relations & Collectif',                axe:'Salarié', score:9,  icon:'👥', color:'#10B981' },
-  { code:'SVP',  name:'Vécu Psychosocial',                    axe:'Salarié', score:8,  icon:'🧠', color:'#EF4444' },
-  { code:'SSP',  name:'Santé Physique',                       axe:'Salarié', score:13, icon:'💪', color:'#10B981' },
+  { code:'SME',  name:'Engagement direction — Mesure',        axe:'Manager', icon:'🎯', color:'#1E3A5F' },
+  { code:'SMI',  name:'Engagement direction — Mise en œuvre', axe:'Manager', icon:'⚙️', color:'#1E3A5F' },
+  { code:'SCS',  name:'Cohésion — Climat social',             axe:'Manager', icon:'🤝', color:'#2D5A8E' },
+  { code:'SI',   name:'Cohésion — Impact',                    axe:'Manager',  icon:'💡', color:'#2D5A8E' },
+  { code:'SA',   name:'RPS — Autonomie',                      axe:'Manager', icon:'🔓', color:'#F59E0B' },
+  { code:'SE',   name:'RPS — Exigence psychologique',         axe:'Manager',  icon:'⚡', color:'#F59E0B' },
+  { code:'SS',   name:'RPS — Soutien social',                 axe:'Manager', icon:'💬', color:'#F59E0B' },
+  { code:'SFB',  name:'TMS — Facteur biomécanique',           axe:'Manager',  icon:'🦴', color:'#7C3AED' },
+  { code:'SSI',  name:'TMS — Suivi',                          axe:'Manager', icon:'🩺', color:'#7C3AED' },
+  { code:'SE2',  name:'TMS — Environnement',                  axe:'Manager', icon:'🪑', color:'#7C3AED' },
+  { code:'SER',  name:'Engagement & Reconnaissance',          axe:'Salarié', icon:'⭐', color:'#10B981' },
+  { code:'SRC',  name:'Relations & Collectif',                axe:'Salarié',  icon:'👥', color:'#10B981' },
+  { code:'SVP',  name:'Vécu Psychosocial',                    axe:'Salarié',  icon:'🧠', color:'#EF4444' },
+  { code:'SSP',  name:'Santé Physique',                       axe:'Salarié', icon:'💪', color:'#10B981' },
 ];
 
 const QUESTIONS_MANAGER = [
@@ -1362,10 +1451,6 @@ async function doLogin() {
     errEl.textContent = 'Veuillez renseigner email et mot de passe.'; return;
   }
 
-  if (email === 'demo@humaniscore.com' && password === 'demo1234') {
-    enterApp(email, null, 'drh'); return;
-  }
-
   const { data, error } = await _sb.auth.signInWithPassword({ email, password });
   if (error) {
     errEl.textContent = 'Identifiants incorrects. Veuillez réessayer.'; return;
@@ -1403,12 +1488,12 @@ function enterApp(email, user, role) {
 
       const name = email.split('@')[0].replace(/\./g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       document.getElementById('userName').textContent = name;
-      const roleLabels = { manager:'Manager', drh:'DRH', medecin:'Médecin du travail' };
+      const roleLabels = { manager:'Manager', drh:'DRH', medecin:'Médecin du travail', admin_humaniscore:'Admin Humaniscore', salarie:'Salarié' };
       document.getElementById('userRole').textContent = roleLabels[role] || role;
       document.getElementById('userAvatar').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
 
       initDashboard();
-      renderDimensions();
+      // renderDimensions() est appelé après le chargement des scores réels
       renderQuestionnaire('manager');
       renderInterventions();
       renderRadarAxisBtns();
@@ -1506,18 +1591,21 @@ async function initDashboard() {
 
     if (scoresRow) {
       latestScores = scoresRow;
+      renderDimensions();
       document.getElementById('emptyDataBanner').style.display = 'none';
       document.getElementById('alertBanner').style.display = 'flex';
 
       const radarData = computeRadarData(scoresRow);
       renderRadarChart(radarData);
 
-      const global = scoresRow.score_humaniscore ?? scoresRow.humaniscore ?? 61.5;
-      animateValue('scoreGlobal', global, 1);
-      updateGlobalBadge(global);
+      const global = scoresRow.score_humaniscore ?? scoresRow.humaniscore;
+      if (global == null) { document.getElementById('scoreGlobal').textContent = '–'; }
+      if (global != null) animateValue('scoreGlobal', global, 1);
+      if (global != null) updateGlobalBadge(global);
       updateDashboardWithScores(scoresRow);
     } else {
       document.getElementById('emptyDataBanner').style.display = 'flex';
+      renderDimensions();
       document.getElementById('alertBanner').style.display = 'none';
     }
   } catch(e) { /* silencieux */ }
@@ -1649,12 +1737,22 @@ function renderRadarChart(realData) {
 // ════════════════════════════════════════════
 // DIMENSIONS
 // ════════════════════════════════════════════
-function renderDimensions() {
+async function renderDimensions() {
   const grid = document.getElementById('dimGrid');
   if (!grid) return;
-  grid.innerHTML = DIMENSIONS.map(d => {
-    const pct = (d.score / 20) * 100;
-    const riskColor = pct >= 70 ? '#10B981' : pct >= 50 ? '#F59E0B' : '#EF4444';
+  // Scores réels par dimension (échelle 0-100 → /20)
+  let reels = {};
+  try {
+    if (latestScores && latestScores.campagne_id) {
+      const { data } = await _sb.rpc('radar_dimensions', { p_campagne: latestScores.campagne_id });
+      (data || []).forEach(r => { if (r.score != null) reels[r.code] = Math.round(r.score / 5 * 10) / 10; });
+    }
+  } catch(e) { /* silencieux */ }
+  grid.innerHTML = DIMENSIONS.map(dm => {
+    const d = Object.assign({}, dm, { score: reels[dm.code] });
+    const aDonnee = d.score != null;
+    const pct = aDonnee ? (d.score / 20) * 100 : 0;
+    const riskColor = !aDonnee ? '#94A3B8' : pct >= 70 ? '#10B981' : pct >= 50 ? '#F59E0B' : '#EF4444';
     return `
       <div class="dim-card">
         <div class="dim-icon" style="background:${d.color}18;">${d.icon}</div>
@@ -1665,7 +1763,7 @@ function renderDimensions() {
             <div class="progress-fill" style="width:0%;background:${riskColor};" data-width="${pct}" data-dim="${d.code}"></div>
           </div>
         </div>
-        <div class="dim-score-right" style="color:${riskColor}">${d.score}</div>
+        <div class="dim-score-right" style="color:${riskColor}">${aDonnee ? d.score : '–'}</div>
       </div>`;
   }).join('');
 
@@ -1690,15 +1788,12 @@ function showKPIPage(key) {
   let scoreVal = null;
   if (latestScores && latestScores[kpi.scoreKey] != null) {
     scoreVal = latestScores[kpi.scoreKey];
-  } else {
-    const mocks = { rps:62, tms:24, qvt:68, burnout:45, absenteisme:4.2, turnover:16, presenteisme:42 };
-    scoreVal = mocks[key];
   }
 
   const displayScore = scoreVal != null ? Number(scoreVal).toFixed(1) : '–';
-  const deltaN1 = (Math.random() * 6 - 3).toFixed(1);
-  const deltaSign = deltaN1 >= 0 ? '▲ +' : '▼ ';
-  const deltaClass = (kpi.invertDisplay ? -deltaN1 : deltaN1) >= 0 ? 'pos' : 'neg';
+  const deltaN1 = null; // réel à partir de la 2e campagne
+  const deltaSign = '';
+  const deltaClass = 'pos';
 
   const vsSecteurl = kpi.benchmark != null
     ? `<span class="kpi-benchmark">vs secteur : ${kpi.benchmark}${kpi.unit}</span>`
@@ -1750,7 +1845,7 @@ function showKPIPage(key) {
         <div class="kpi-hero-meta">
           <div class="risk-badge ${getRiskClass(scoreVal, kpi)}">${getRiskLabel(scoreVal, kpi)}</div>
           ${vsSecteurl}
-          <span class="delta ${deltaClass}">${deltaSign}${Math.abs(deltaN1)} pts vs N-1</span>
+          ${deltaN1 != null ? `<span class="delta ${deltaClass}">${deltaSign}${Math.abs(deltaN1)} pts vs N-1</span>` : ''}
         </div>
       </div>
     </div>
